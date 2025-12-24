@@ -14,13 +14,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Danh sách Tên Miền Userscript Hỗ Trợ",
-  description: "Danh sách các tên miền được hỗ trợ bởi userscript ReBypass, với chức năng tìm kiếm và lọc.",
-  keywords: "userscript, bypass, domains, supported sites",
-  authors: [{ name: "Your Name" }],
+  title: "BYPASS.VIP Userscript (Remake)",
+  description: "Bypass ad-links using the bypass.vip API and get to your destination without ads! A remake of the official userscript.",
+  keywords: "userscript, bypass, ad-links, bypass.vip, remake",
+  authors: [{ name: "sang765" }],
   openGraph: {
-    title: "Danh sách Tên Miền Userscript Hỗ Trợ",
-    description: "Khám phá các tên miền được hỗ trợ bởi userscript ReBypass.",
+    title: "BYPASS.VIP Userscript (Remake)",
+    description: "Automatic bypass of ad-links on supported sites using bypass.vip API.",
     type: "website",
   },
 };
