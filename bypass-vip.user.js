@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          BYPASS.VIP (REMAKE VERSION)
 // @namespace     bypass.vip
-// @version       1.4.6
+// @version       1.4.7
 // @author        sang765
 // @description   Bypass ad-links using the bypass.vip API and get to your destination without ads!
 // @grant         GM_setClipboard
@@ -182,6 +182,11 @@
 // @match         *://v.gd/*
 // @match         *://work.ink/*
 // @exclude       *://work.ink/token/*
+// @exclude       *://www.work.ink/token/*
+// @exclude       *://r.work.ink/token/*
+// @exclude       *://workink.net/token/*
+// @exclude       *://workink.one/token/*
+// @exclude       *://workink.me/token/*
 // @match         *://www.work.ink/*
 // @match         *://workink.net/*
 // @match         *://r.work.ink/*
