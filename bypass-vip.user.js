@@ -1,9 +1,11 @@
 // ==UserScript==
 // @name          BYPASS.VIP (REMAKE VERSION)
 // @namespace     bypass.vip
-// @version       1.4.5
+// @version       1.4.6
 // @author        sang765
 // @description   Bypass ad-links using the bypass.vip API and get to your destination without ads!
+// @grant         GM_setClipboard
+// @grant         GM_info
 // @match         *://mega-guy.com/*
 // @match         *://loot-link.com/*
 // @match         *://best-links.org/*
@@ -200,62 +202,182 @@
     'use strict';
     if (window.top !== window.self) {return;};
     const config = {
-        time: 10,
+        time: 25, // NOTE: Longer = Difficult to detect by anti-bypass
         key: '',
         safeMode: true
     };
+
+    const BYPASS_LOGO = GM_info.script.icon;
+
+    // --- UTILS ---
+    const isBypassSite = () => window.location.hostname === 'bypass.vip' && window.location.pathname.includes('userscript');
+
+    const isValidUrl = (url) => {
+        try { new URL(url); return true; } catch { return false; }
+    };
+
+    function showError(message) {
+        if (document.body) {
+            document.body.innerHTML = `
+                <div style="color: #ff4d4d; text-align: center; padding: 40px; background: #121212; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: sans-serif;">
+                    <h2 style="margin-bottom:10px;">Bypass Script Error</h2>
+                    <p style="font-size: 1.1em; background: #1e1e1e; padding: 15px; border-radius: 8px; border: 1px solid #333;">${message}</p>
+                    <button onclick="location.reload()" style="margin-top:20px; padding:10px 20px; background:#1E88E5; color:white; border:none; border-radius:5px; cursor:pointer;">Reload Page</button>
+                </div>`;
+        }
+        console.error('Userscript error:', message);
+    }
+
+    // --- UI: TOP CENTER (SINGLE LINE TOAST) ---
+    function showBypassToast() {
+        if (document.getElementById('bypass-toast-notify')) return;
+        const toast = document.createElement('div');
+        toast.id = 'bypass-toast-notify';
+        toast.style.cssText = `
+            position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
+            background: rgba(18, 18, 18, 0.9); color: white; padding: 8px 16px;
+            border-radius: 30px; border: 1px solid #1E88E5; z-index: 2147483647;
+            display: flex; align-items: center; font-family: 'Segoe UI', sans-serif;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-size: 13px; font-weight: 500;
+            pointer-events: none; backdrop-filter: blur(4px);
+        `;
+        toast.innerHTML = `
+            <img src="${BYPASS_LOGO}" style="width:18px; height:18px; margin-right:10px;">
+            <span>BYPASS.VIP: STARTING BYPASS...</span>
+        `;
+        (document.body || document.documentElement).appendChild(toast);
+    }
+
+    // --- UI: BYPASS.VIP PAGE (CLICK-TO-COPY) ---
+    function injectBypassInfoUI(targetUrl) {
+        const container = document.querySelector('.highlights-container') || document.body;
+        const infoDiv = document.createElement('div');
+        infoDiv.style.cssText = `background:#1e1e1e; border:1px solid #333; border-radius:12px; padding:15px; margin:20px auto; max-width:600px; color:#fff; font-family:sans-serif;`;
+        infoDiv.innerHTML = `
+            <div style="display:flex; align-items:center; margin-bottom:10px;">
+                <img src="${BYPASS_LOGO}" style="width:20px; height:20px; margin-right:10px;">
+                <span style="font-weight:bold; color:#1E88E5; font-size:13px; flex-grow:1;">CLICK THE URL TO COPY:</span>
+                <span id="copyStatus" style="color:#2ecc71; font-size:11px; opacity:0; transition:0.3s;">Copied!</span>
+            </div>
+            <div id="clickToCopyUrl" style="background:#000; padding:10px; border-radius:6px; word-break:break-all; font-family:monospace; font-size:12px; border:1px solid #444; color:#2ecc71; cursor:pointer;" aria-label="Click to copy" tabindex="0">${targetUrl}</div>
+        `;
+        container.prepend(infoDiv);
+
+        const urlBox = document.getElementById('clickToCopyUrl');
+        const status = document.getElementById('copyStatus');
+        urlBox.onclick = () => {
+            GM_setClipboard(targetUrl);
+            status.style.opacity = '1';
+            setTimeout(() => { status.style.opacity = '0'; }, 1500);
+        };
+    }
 
     function createContainer() {
         const container = document.createElement('div');
         container.id = 'userscript-container';
         container.style.cssText = `
+            --primary-color: #1E88E5;
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --error-color: #ff4d4d;
+            --success-color: #2ecc71;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #121212;
-            color: #e0e0e0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 40px;
+            padding: 20px;
             z-index: 2147483647;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow: auto;
             box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
             pointer-events: auto;
+            @media (max-width: 768px) {
+                padding: 10px;
+                font-size: 0.9em;
+            }
         `;
         container.innerHTML = `
-            <h2 style="font-size: 2em; margin-bottom: 15px; color: #ffffff; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">BYPASS.VIP USERSCRIPT</h2>
-            <p style="margin-bottom: 30px; font-size: 1.1em; color: #b0b0b0;">Click the button below to proceed to the bypassed link.</p>
-            <div id="countdown" style="font-size: 1.3em; margin-bottom: 30px; padding: 10px; background: #1e1e1e; border-radius: 8px; width: 80%; max-width: 600px;"></div>
-            <button id="nextBtn" type="button" style="
-                padding: 12px 24px;
-                background-color: #1E88E5;
-                color: #ffffff;
-                border: none;
-                border-radius: 8px;
-                cursor: pointer;
-                transition: background-color 0.3s, transform 0.2s;
-                font-size: 1.1em;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-                position: relative;
-                z-index: 2147483647;
-                pointer-events: auto;
-            ">Next</button>
-            <div id="errorMsg" style="color: #ff4d4d; margin-top: 30px; display: none; font-size: 1.1em; background: #2a2a2a; padding: 10px; border-radius: 8px;"></div>
-            <div id="spinner" style="border: 5px solid #333333; border-top: 5px solid #1E88E5; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; display: none; margin-top: 20px;"></div>
+            <div style="position: absolute; top: 20px; right: 20px;">
+                <button id="settingsBtn" style="
+                    background: var(--bg-color); border: 1px solid var(--primary-color); color: var(--primary-color);
+                    padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.9em;
+                    transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                ">⚙️ Settings</button>
+                <div id="settingsDropdown" style="
+                    display: none; position: absolute; top: 40px; right: 0; background: #1e1e1e;
+                    border: 1px solid #333; border-radius: 8px; padding: 15px; width: 250px;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 2147483648;
+                ">
+                    <label style="display: block; margin-bottom: 10px; color: var(--text-color);">
+                        Time (seconds): <input id="timeInput" type="number" value="${config.time}" style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;">
+                    </label>
+                    <label style="display: block; margin-bottom: 10px; color: var(--text-color);">
+                        API Key: <input id="keyInput" type="text" value="${config.key}" style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;">
+                    </label>
+                    <button id="saveSettings" style="
+                        width: 100%; padding: 8px; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;
+                        transition: background 0.3s;
+                    ">Save</button>
+                </div>
+            </div>
+            <img src="${BYPASS_LOGO}" style="width: 80px; height: 80px; margin-bottom: 20px; @media (max-width: 768px) { width: 60px; height: 60px; }">
+            <h2 style="font-size: 2.5em; margin-bottom: 15px; color: #ffffff; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); @media (max-width: 768px) { font-size: 2em; }">BYPASS.VIP</h2>
+            <p style="margin-bottom: 30px; font-size: 1.1em; color: #b0b0b0; max-width: 600px;">Click the button below to proceed to the bypassed link.</p>
+            <div id="countdown" style="font-size: 1.3em; margin-bottom: 30px; padding: 15px; background: #1e1e1e; border-radius: 12px; width: 90%; max-width: 600px; border: 1px solid #333; @media (max-width: 768px) { font-size: 1.1em; padding: 10px; }"></div>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
+                <button id="nextBtn" type="button" style="
+                    padding: 15px 30px;
+                    background-color: var(--primary-color);
+                    color: #ffffff;
+                    border: none;
+                    border-radius: 12px;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                    font-size: 1.2em;
+                    box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+                    position: relative;
+                    z-index: 2147483647;
+                    pointer-events: auto;
+                    @media (max-width: 768px) { padding: 12px 24px; font-size: 1em; }
+                ">PROCEED</button>
+                <button id="cancelBtn" type="button" style="
+                    padding: 15px 30px;
+                    background-color: #666;
+                    color: #ffffff;
+                    border: none;
+                    border-radius: 12px;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                    font-size: 1.2em;
+                    box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+                    @media (max-width: 768px) { padding: 12px 24px; font-size: 1em; }
+                ">Cancel</button>
+            </div>
+            <div id="errorMsg" style="color: var(--error-color); margin-top: 30px; display: none; font-size: 1.1em; background: #2a2a2a; padding: 15px; border-radius: 8px; border: 1px solid #444; max-width: 600px;"></div>
+            <div id="spinner" style="border: 5px solid #333333; border-top: 5px solid var(--primary-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; display: none; margin-top: 20px;"></div>
             <style>
                 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-                #nextBtn:hover { background-color: #1565C0; transform: translateY(-2px); }
+                #nextBtn:hover { background-color: #1565C0; transform: translateY(-3px); box-shadow: 0 8px 16px rgba(0,0,0,0.5); }
                 #nextBtn:active { transform: translateY(0); }
                 #nextBtn:disabled {
                     pointer-events: none;
                     opacity: 0.6;
                     cursor: not-allowed;
+                }
+                #cancelBtn:hover { background-color: #999; transform: translateY(-3px); }
+                #cancelBtn:active { transform: translateY(0); }
+                #settingsBtn:hover { background: var(--primary-color); color: white; }
+                @media (max-width: 768px) {
+                    #settingsDropdown { width: 200px; padding: 10px; }
+                    #timeInput, #keyInput { font-size: 0.9em; }
                 }
             </style>
         `;
@@ -263,33 +385,7 @@
     }
 
     function showStartingNotification() {
-        const notification = document.createElement('div');
-        notification.id = 'starting-notification';
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #333;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 5px;
-            z-index: 2147483647;
-            display: flex;
-            align-items: center;
-            font-family: Arial, sans-serif;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-        `;
-        notification.innerHTML = `
-            <img src="https://www.google.com/s2/favicons?domain=bypass.vip&sz=64" style="width: 20px; height: 20px; margin-right: 10px;" alt="Icon">
-            <span>STARTING BYPASS...</span>
-        `;
-        document.body.appendChild(notification);
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.remove();
-            }
-        }, 3000);
+        showBypassToast();
     }
 
     function showError(message) {
@@ -319,11 +415,21 @@
 
         function runScript() {
             const urlParams = new URLSearchParams(window.location.search);
+
+            if (isBypassSite()) {
+                const targetUrl = urlParams.get('url');
+                if (targetUrl) injectBypassInfoUI(decodeURIComponent(targetUrl));
+                return;
+            }
+
             const rawRedirect = urlParams.get('redirect');
 
             if (!rawRedirect) {
-                const targetUrl = `https://bypass.vip/userscript.html?url=${encodeURIComponent(location.href)}&time=${config.time}&key=${config.key}`;
-                location.replace(targetUrl);
+                showBypassToast();
+                setTimeout(() => {
+                    const targetUrl = `https://bypass.vip/userscript.html?url=${encodeURIComponent(location.href)}&time=${config.time}&key=${config.key}&safe=${config.safeMode}`;
+                    location.replace(targetUrl);
+                }, 800);
                 return;
             }
 
@@ -351,6 +457,28 @@
             } else {
                 document.documentElement.appendChild(container);
             }
+
+            // Settings dropdown toggle
+            const settingsBtn = container.querySelector('#settingsBtn');
+            const settingsDropdown = container.querySelector('#settingsDropdown');
+            settingsBtn.addEventListener('click', () => {
+                settingsDropdown.style.display = settingsDropdown.style.display === 'none' ? 'block' : 'none';
+            });
+
+            // Settings are not persistent in this version
+            const saveSettings = container.querySelector('#saveSettings');
+            saveSettings.addEventListener('click', () => {
+                settingsDropdown.style.display = 'none';
+                alert('Settings are not saved in this version.');
+            });
+
+            // Cancel button
+            const cancelBtn = container.querySelector('#cancelBtn');
+            cancelBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to cancel and reload?')) {
+                    location.reload();
+                }
+            });
 
             const countdownEl = container.querySelector('#countdown');
             const btn = container.querySelector('#nextBtn');
