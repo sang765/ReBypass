@@ -183,8 +183,8 @@ const DOMAINS = [
 
 export default function Home() {
   return (
-    <div className="bg-gray-900 text-gray-200 min-h-screen">
-      <header className="bg-gray-800 shadow-md">
+    <div className="text-gray-200 min-h-screen">
+      <header className="bg-white/10 dark:bg-gray-800/10 shadow-md backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-6 flex justify-between items-center">
           <h1 className="text-3xl font-bold text-white">BYPASS.VIP Userscript</h1>
           <a
@@ -208,7 +208,7 @@ export default function Home() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {DOMAINS.map(domain => (
-            <div key={domain} className="bg-gray-800 p-4 rounded-lg shadow-lg flex items-center space-x-4">
+            <div key={domain} className="bg-white/10 dark:bg-gray-800/10 p-4 rounded-lg shadow-lg flex items-center space-x-4 backdrop-blur-sm">
               <img src={`https://www.google.com/s2/favicons?domain=${domain}&sz=64`} alt={`${domain} logo`} className="w-8 h-8"/>
               <p className="text-white font-semibold">{domain}</p>
             </div>
@@ -216,7 +216,7 @@ export default function Home() {
         </div>
       </main>
 
-      <footer className="bg-gray-800 py-6 mt-12">
+      <footer className="bg-white/10 dark:bg-gray-800/10 py-6 mt-12 backdrop-blur-sm">
         <div className="container mx-auto text-center text-gray-400">
           <p>Created by <a href="https://github.com/sang765" className="text-blue-400 hover:underline">sang765</a></p>
           <p>Licensed under the MIT License.</p>
