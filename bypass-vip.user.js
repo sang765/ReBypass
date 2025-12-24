@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name          BYPASS.VIP BYPASSER
+// @name          BYPASS.VIP (REMAKE VERSION)
 // @namespace     bypass.vip
-// @version       1.4.4
-// @author        bypass.vip
+// @version       1.4.5
+// @author        sang765
 // @description   Bypass ad-links using the bypass.vip API and get to your destination without ads!
 // @match         *://mega-guy.com/*
 // @match         *://loot-link.com/*
@@ -179,6 +179,7 @@
 // @match         *://unlocknow.net/*
 // @match         *://v.gd/*
 // @match         *://work.ink/*
+// @exclude       *://work.ink/token/*
 // @match         *://www.work.ink/*
 // @match         *://workink.net/*
 // @match         *://r.work.ink/*
