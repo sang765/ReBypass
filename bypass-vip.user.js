@@ -190,9 +190,9 @@
 // @match         *://esohasl.net/*
 // @match         *://rbscripts.net/*
 // @match         *://link.rbscripts.net/*
-// @downloadURL   https://raw.githubusercontent.com/bypass-vip/userscript/master/bypass-vip.user.js
-// @updateURL     https://raw.githubusercontent.com/bypass-vip/userscript/master/bypass-vip.user.js
-// @homepageURL   https://bypass.vip
+// @downloadURL   https://raw.githubusercontent.com/sang765/ReBypass/main/bypass-vip.user.js
+// @updateURL     https://raw.githubusercontent.com/sang765/ReBypass/main/bypass-vip.user.js
+// @homepageURL   https://github.com/sang765/ReBypass
 // @icon          https://www.google.com/s2/favicons?domain=bypass.vip&sz=64
 // @run-at        document-start
 // ==/UserScript==
