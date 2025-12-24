@@ -257,7 +257,7 @@
             </div>
             <div id="clickToCopyUrl" style="background:#000; padding:10px; border-radius:6px; word-break:break-all; font-family:monospace; font-size:12px; border:1px solid #444; color:#2ecc71; cursor:pointer;" aria-label="Click to copy" tabindex="0">${targetUrl}</div>
         `;
-        container.prepend(infoDiv);
+        container.insertBefore(infoDiv, container.firstChild);
 
         const urlBox = document.getElementById('clickToCopyUrl');
         const status = document.getElementById('copyStatus');
