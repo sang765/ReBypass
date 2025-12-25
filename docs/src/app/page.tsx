@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const DOMAINS = [
   "mega-guy.com",
@@ -182,23 +182,51 @@ const DOMAINS = [
 ];
 
 export default function Home() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleScrollTo = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+    }
+    setIsMenuOpen(false);
+  };
+
   return (
     <div className="text-gray-200 min-h-screen">
-      <header className="bg-white/20 dark:bg-gray-800/20 shadow-md backdrop-blur-md sticky top-0 z-10">
+      <header className="bg-white/20 dark:bg-gray-800/20 shadow-md backdrop-blur-md sticky top-0 z-20">
         <div className="container mx-auto px-4 py-6 flex justify-between items-center">
           <h1 className="text-3xl font-bold text-white">BYPASS.VIP Userscript</h1>
-          <a
-            href="https://raw.githubusercontent.com/sang765/ReBypass/main/bypass-vip.user.js"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
-          >
-            Install Now
-          </a>
+          
+          <button onClick={toggleMenu} className="text-white focus:outline-none">
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-4 6h4" />
+            </svg>
+          </button>
         </div>
       </header>
 
+      <div className={`fixed top-0 right-0 h-full bg-gray-900/80 backdrop-blur-lg w-64 transform ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out z-30`}>
+        <div className="p-5 flex flex-col space-y-4">
+            <button onClick={toggleMenu} className="self-end text-white p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <a href="#" onClick={(e) => { e.preventDefault(); toggleMenu(); }} className="text-white hover:text-blue-400 text-lg py-2">Home</a>
+            <a href="https://raw.githubusercontent.com/sang765/ReBypass/main/bypass-vip.user.js" className="text-white hover:text-blue-400 text-lg py-2">Install</a>
+            <button onClick={() => handleScrollTo('supported-domains')} className="text-left text-white hover:text-blue-400 text-lg py-2">Domain Support List</button>
+            <a href="https://github.com/sang765/ReBypass" target="_blank" rel="noopener noreferrer" className="text-white hover:text-blue-400 text-lg py-2">GitHub</a>
+        </div>
+      </div>
+
       <main className="container mx-auto p-8">
         <section className="text-center mb-12">
-          <h2 className="text-5xl font-extrabold text-blue-400 mb-4">
+          <h2 id="supported-domains" className="text-5xl font-extrabold text-blue-400 mb-4 scroll-mt-24">
             Supported Domains
           </h2>
           <p className="text-xl text-gray-400 mb-8">
