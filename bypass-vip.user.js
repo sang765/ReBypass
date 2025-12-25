@@ -6,6 +6,9 @@
 // @description   Bypass ad-links using the bypass.vip API and get to your destination without ads!
 // @grant         GM_setClipboard
 // @grant         GM_info
+// @grant         GM_setValue
+// @grant         GM_getValue
+// @grant         GM_registerMenuCommand
 // @match         *://mega-guy.com/*
 // @match         *://loot-link.com/*
 // @match         *://best-links.org/*
@@ -207,11 +210,68 @@
 (async () => {
     'use strict';
     if (window.top !== window.self) {return;};
-    const config = {
-        time: 25, // NOTE: Longer = Difficult to detect by anti-bypass
-        key: '',
-        safeMode: true
+    const DOMAIN_CLASSIFICATIONS_URL = 'https://raw.githubusercontent.com/sang765/ReBypass/refs/heads/main/domains-classification.json';
+
+    const DEFAULT_WAIT_TIMES = {
+        url_shortener: 20,
+        social_unlock: 5,
+        redirect_hub: 0,
+        lootlabs_ecosystem: 20,
+        mega_hub: 18,
+        leak_nsfw_hub: 25,
+        paste_text_host: 8,
+        community_discord: 10,
+        random_obfuscated: 15,
+        default: 25
     };
+
+    let classifications = {};
+    try {
+        const response = await fetch(DOMAIN_CLASSIFICATIONS_URL);
+        if (response.ok) {
+            classifications = await response.json();
+        } else {
+            throw new Error('Failed to fetch classifications');
+        }
+    } catch (e) {
+        console.warn('Failed to load domain classifications, using default times:', e);
+    }
+
+    function getDomainCategory(domain) {
+        for (const [cat, domains] of Object.entries(classifications)) {
+            if (domains.includes(domain)) {
+                return cat;
+            }
+        }
+        return 'default';
+    }
+
+    const config = {
+        advancedMode: GM_getValue('advancedMode', true),
+        globalTime: GM_getValue('globalTime', 25),
+        key: GM_getValue('key', ''),
+        safeMode: GM_getValue('safeMode', true)
+    };
+
+    // Menu commands for settings
+    GM_registerMenuCommand('Toggle Advanced Time Mode', () => {
+        const current = GM_getValue('advancedMode', true);
+        GM_setValue('advancedMode', !current);
+        alert(`Advanced Time Mode ${!current ? 'enabled' : 'disabled'}. Reload the page to apply.`);
+    });
+
+    GM_registerMenuCommand('Set Global Wait Time', () => {
+        const time = prompt('Enter global wait time in seconds:', GM_getValue('globalTime', 25));
+        if (time !== null) {
+            const t = parseInt(time);
+            if (!isNaN(t) && t > 0) {
+                GM_setValue('globalTime', t);
+                alert(`Global wait time set to ${t} seconds. Reload the page to apply.`);
+            } else {
+                alert('Invalid time. Must be a positive number.');
+            }
+        }
+    });
 
     const BYPASS_LOGO = GM_info.script.icon;
 
@@ -319,7 +379,10 @@
                     box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 2147483648;
                 ">
                     <label style="display: block; margin-bottom: 10px; color: var(--text-color);">
-                        Time (seconds): <input id="timeInput" type="number" value="${config.time}" style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;">
+                        <input id="advancedModeInput" type="checkbox" ${config.advancedMode ? 'checked' : ''}> Advanced Time Mode
+                    </label>
+                    <label style="display: block; margin-bottom: 10px; color: var(--text-color);">
+                        Global Time (seconds): <input id="timeInput" type="number" value="${config.globalTime}" style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;">
                     </label>
                     <label style="display: block; margin-bottom: 10px; color: var(--text-color);">
                         API Key: <input id="keyInput" type="text" value="${config.key}" style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;">
@@ -418,6 +481,10 @@
         function runScript() {
             const urlParams = new URLSearchParams(window.location.search);
 
+            const currentDomain = window.location.hostname;
+            const category = getDomainCategory(currentDomain);
+            const waitTime = config.advancedMode ? (DEFAULT_WAIT_TIMES[category] || DEFAULT_WAIT_TIMES.default) : config.globalTime;
+
             if (isBypassSite()) {
                 const targetUrl = urlParams.get('url');
                 if (targetUrl) injectBypassInfoUI(decodeURIComponent(targetUrl));
@@ -429,7 +496,7 @@
             if (!rawRedirect) {
                 showBypassToast();
                 setTimeout(() => {
-                    const targetUrl = `https://bypass.vip/userscript.html?url=${encodeURIComponent(location.href)}&time=${config.time}&key=${config.key}&safe=${config.safeMode}`;
+                    const targetUrl = `https://bypass.vip/userscript.html?url=${encodeURIComponent(location.href)}&time=${waitTime}&key=${config.key}&safe=${config.safeMode}`;
                     location.replace(targetUrl);
                 }, 800);
                 return;
@@ -467,11 +534,16 @@
                 settingsDropdown.style.display = settingsDropdown.style.display === 'none' ? 'block' : 'none';
             });
 
-            // Settings are not persistent in this version
             const saveSettings = container.querySelector('#saveSettings');
             saveSettings.addEventListener('click', () => {
+                const advancedMode = document.getElementById('advancedModeInput').checked;
+                const globalTime = parseInt(document.getElementById('timeInput').value);
+                const key = document.getElementById('keyInput').value;
+                GM_setValue('advancedMode', advancedMode);
+                GM_setValue('globalTime', globalTime);
+                GM_setValue('key', key);
                 settingsDropdown.style.display = 'none';
-                alert('Settings are not saved in this version.');
+                alert('Settings saved. Reload the page to apply changes.');
             });
 
             // Cancel button
