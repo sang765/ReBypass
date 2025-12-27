@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          BYPASS.VIP (REMAKE VERSION)
 // @namespace     bypass.vip
-// @version       1.4.8
+// @version       1.4.9
 // @author        sang765
 // @description   Bypass ad-links using the bypass.vip API and get to your destination without ads! Includes stealth mode, randomization, and obfuscation for harder detection by anti-bypass systems.
 // @grant         GM_setClipboard
