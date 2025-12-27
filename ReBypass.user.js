@@ -201,8 +201,8 @@
 // @match         *://rbscripts.net/*
 // @match         *://link.rbscripts.net/*
 // @match         *://bypass.vip/userscript*
-// @downloadURL   https://raw.githubusercontent.com/sang765/ReBypass/main/bypass-vip.user.js
-// @updateURL     https://raw.githubusercontent.com/sang765/ReBypass/main/bypass-vip.user.js
+// @downloadURL   https://raw.githubusercontent.com/sang765/ReBypass/main/ReBypass.user.js
+// @updateURL     https://raw.githubusercontent.com/sang765/ReBypass/main/ReBypass.user.js
 // @homepageURL   https://github.com/sang765/ReBypass
 // @icon          https://www.google.com/s2/favicons?domain=bypass.vip&sz=64
 // @run-at        document-start
