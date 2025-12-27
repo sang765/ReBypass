@@ -368,7 +368,7 @@
         container.id = 'userscript-container';
         container.style.cssText = `
             --primary-color: #1E88E5;
-            --bg-color: #121212;
+            --bg-color: rgba(18, 18, 18, 0.7);
             --text-color: #e0e0e0;
             --error-color: #ff4d4d;
             --success-color: #2ecc71;
