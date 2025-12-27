@@ -291,7 +291,7 @@
 
     // Dynamic IDs for UI elements to avoid detection
     const toastId = randomId();
-    const containerId = 'userscript-container';
+    const containerId = randomId();
     const settingsBtnId = randomId();
     const settingsDropdownId = randomId();
     const advancedModeInputId = randomId();
@@ -368,10 +368,7 @@
 
     // --- UI: TOP CENTER (SINGLE LINE TOAST) ---
     function showBypassToast() {
-        const existingToast = document.querySelector('.bypass-toast');
-        if (existingToast) {
-            existingToast.remove();
-        }
+        if (document.querySelector('.bypass-toast')) return;
         const toast = document.createElement('div');
         toast.id = toastId;
         toast.className = 'bypass-toast';
@@ -441,10 +438,6 @@
             overflow: auto;
             box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
             pointer-events: auto;
-            @media (max-width: 768px) {
-                padding: 10px;
-                font-size: 0.9em;
-            }
         `;
         container.innerHTML = `
             <div style="position: absolute; top: 20px; right: 20px;">
@@ -487,10 +480,10 @@
                     ">Save</button>
                 </div>
             </div>
-            <img src="${BYPASS_LOGO}" style="width: 80px; height: 80px; margin-bottom: 20px; @media (max-width: 768px) { width: 60px; height: 60px; }">
-            <h2 style="font-size: 2.5em; margin-bottom: 15px; color: #ffffff; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); @media (max-width: 768px) { font-size: 2em; }">BYPASS.VIP</h2>
+            <img src="${BYPASS_LOGO}" style="width: 80px; height: 80px; margin-bottom: 20px;">
+            <h2 style="font-size: 2.5em; margin-bottom: 15px; color: #ffffff; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">BYPASS.VIP</h2>
             <p style="margin-bottom: 30px; font-size: 1.1em; color: #b0b0b0; max-width: 600px;">Click the button below to proceed to the bypassed link.</p>
-            <div id="${countdownId}" style="font-size: 1.3em; margin-bottom: 30px; padding: 15px; background: #1e1e1e; border-radius: 12px; width: 90%; max-width: 600px; border: 1px solid #333; @media (max-width: 768px) { font-size: 1.1em; padding: 10px; }"></div>
+            <div id="${countdownId}" style="font-size: 1.3em; margin-bottom: 30px; padding: 15px; background: #1e1e1e; border-radius: 12px; width: 90%; max-width: 600px; border: 1px solid #333;"></div>
             <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
                 <button id="${nextBtnId}" type="button" style="
                     padding: 15px 30px;
@@ -505,7 +498,6 @@
                     position: relative;
                     z-index: 2147483647;
                     pointer-events: auto;
-                    @media (max-width: 768px) { padding: 12px 24px; font-size: 1em; }
                 ">PROCEED</button>
                 <button id="${cancelBtnId}" type="button" style="
                     padding: 15px 30px;
@@ -517,26 +509,48 @@
                     transition: all 0.3s;
                     font-size: 1.2em;
                     box-shadow: 0 6px 12px rgba(0,0,0,0.4);
-                    @media (max-width: 768px) { padding: 12px 24px; font-size: 1em; }
                 ">Cancel</button>
             </div>
             <div id="${errorMsgId}" style="color: var(--error-color); margin-top: 30px; display: none; font-size: 1.1em; background: #2a2a2a; padding: 15px; border-radius: 8px; border: 1px solid #444; max-width: 600px;"></div>
             <div id="${spinnerId}" style="border: 5px solid #333333; border-top: 5px solid var(--primary-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; display: none; margin-top: 20px;"></div>
             <style>
                 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-                #nextBtn:hover { background-color: #1565C0; transform: translateY(-3px); box-shadow: 0 8px 16px rgba(0,0,0,0.5); }
-                #nextBtn:active { transform: translateY(0); }
-                #nextBtn:disabled {
+                #${nextBtnId}:hover { background-color: #1565C0; transform: translateY(-3px); box-shadow: 0 8px 16px rgba(0,0,0,0.5); }
+                #${nextBtnId}:active { transform: translateY(0); }
+                #${nextBtnId}:disabled {
                     pointer-events: none;
                     opacity: 0.6;
                     cursor: not-allowed;
                 }
-                #cancelBtn:hover { background-color: #999; transform: translateY(-3px); }
-                #cancelBtn:active { transform: translateY(0); }
-                #settingsBtn:hover { background: var(--primary-color); color: white; }
+                #${cancelBtnId}:hover { background-color: #999; transform: translateY(-3px); }
+                #${cancelBtnId}:active { transform: translateY(0); }
+                #${settingsBtnId}:hover { background: var(--primary-color); color: white; }
                 @media (max-width: 768px) {
-                    #settingsDropdown { width: 200px; padding: 10px; }
-                    #timeInput, #keyInput { font-size: 0.9em; }
+                    #${containerId} {
+                        padding: 10px;
+                        font-size: 0.9em;
+                    }
+                    #${containerId} img {
+                        width: 60px;
+                        height: 60px;
+                    }
+                    #${containerId} h2 {
+                        font-size: 2em;
+                    }
+                    #${countdownId} {
+                        font-size: 1.1em;
+                        padding: 10px;
+                    }
+                    #${nextBtnId} {
+                        padding: 12px 24px;
+                        font-size: 1em;
+                    }
+                    #${cancelBtnId} {
+                        padding: 12px 24px;
+                        font-size: 1em;
+                    }
+                    #${settingsDropdownId} { width: 200px; padding: 10px; }
+                    #${timeInputId}, #${keyInputId} { font-size: 0.9em; }
                 }
             </style>
         `;
@@ -618,7 +632,7 @@
                 }
             }
 
-            if (document.getElementById(containerId)) {
+            if (document.body && document.body.hasAttribute('data-bypass-injected')) {
                 return;
             }
 
@@ -627,8 +641,10 @@
             const container = createContainer();
             if (document.body) {
                 document.body.appendChild(container);
+                document.body.setAttribute('data-bypass-injected', 'true');
             } else {
                 document.documentElement.appendChild(container);
+                document.documentElement.setAttribute('data-bypass-injected', 'true');
             }
 
             // Semi-hide UI if captcha is detected
