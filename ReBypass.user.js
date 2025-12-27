@@ -291,7 +291,7 @@
 
     // Dynamic IDs for UI elements to avoid detection
     const toastId = randomId();
-    const containerId = randomId();
+    const containerId = 'userscript-container';
     const settingsBtnId = randomId();
     const settingsDropdownId = randomId();
     const advancedModeInputId = randomId();
@@ -417,7 +417,6 @@
     function createContainer() {
         const container = document.createElement('div');
         container.id = containerId;
-        container.className = 'bypass-ui-container';
         container.style.cssText = `
             --primary-color: #1E88E5;
             --bg-color: rgba(18, 18, 18, 0.7);
@@ -619,13 +618,7 @@
                 }
             }
 
-            // Remove any existing bypass UI
-            const existingUI = document.querySelector('.bypass-ui-container');
-            if (existingUI) {
-                existingUI.remove();
-            }
-
-            if (document.body && document.body.hasAttribute('data-bypass-injected')) {
+            if (document.getElementById(containerId)) {
                 return;
             }
 
@@ -634,10 +627,8 @@
             const container = createContainer();
             if (document.body) {
                 document.body.appendChild(container);
-                document.body.setAttribute('data-bypass-injected', 'true');
             } else {
                 document.documentElement.appendChild(container);
-                document.documentElement.setAttribute('data-bypass-injected', 'true');
             }
 
             // Semi-hide UI if captcha is detected
