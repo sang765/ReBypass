@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name          BYPASS.VIP (REMAKE VERSION)
 // @namespace     bypass.vip
-// @version       1.4.7
+// @version       1.4.9
 // @author        sang765
-// @description   Bypass ad-links using the bypass.vip API and get to your destination without ads!
+// @description   Bypass ad-links using the bypass.vip API and get to your destination without ads! Includes stealth mode, randomization, and obfuscation for harder detection by anti-bypass systems.
 // @grant         GM_setClipboard
 // @grant         GM_info
 // @grant         GM_setValue
@@ -246,20 +246,27 @@
         return 'default';
     }
 
-    const config = {
+    const cfg = {
         advancedMode: GM_getValue('advancedMode', true),
         globalTime: GM_getValue('globalTime', 25),
         key: GM_getValue('key', ''),
-        safeMode: GM_getValue('safeMode', true)
+        safeMode: GM_getValue('safeMode', true),
+        stealthMode: GM_getValue('stealthMode', false)
     };
 
-    const waitTimes = GM_getValue('waitTimes', DEFAULT_WAIT_TIMES);
+    const wt = GM_getValue('waitTimes', DEFAULT_WAIT_TIMES);
 
     // Menu commands for settings
     GM_registerMenuCommand('Toggle Advanced Time Mode', () => {
         const current = GM_getValue('advancedMode', true);
         GM_setValue('advancedMode', !current);
         alert(`Advanced Time Mode ${!current ? 'enabled' : 'disabled'}. Reload the page to apply.`);
+    });
+
+    GM_registerMenuCommand('Toggle Stealth Mode', () => {
+        const current = GM_getValue('stealthMode', false);
+        GM_setValue('stealthMode', !current);
+        alert(`Stealth Mode ${!current ? 'enabled' : 'disabled'}. Reload the page to apply.`);
     });
 
     GM_registerMenuCommand('Set Global Wait Time', () => {
@@ -277,8 +284,75 @@
 
     const BYPASS_LOGO = GM_info.script.icon;
 
+    // --- OBFUSCATION UTILS ---
+    function randomId() {
+        return 'a' + Math.random().toString(36).substr(2, 9);
+    }
+
+    // Dynamic IDs for UI elements to avoid detection
+    const toastId = randomId();
+    const containerId = randomId();
+    const settingsBtnId = randomId();
+    const settingsDropdownId = randomId();
+    const advancedModeInputId = randomId();
+    const stealthModeInputId = randomId();
+    const timeInputId = randomId();
+    const keyInputId = randomId();
+    const timeUrlShortenerId = randomId();
+    const timeSocialUnlockId = randomId();
+    const timeRedirectHubId = randomId();
+    const timeLootlabsEcosystemId = randomId();
+    const timeMegaHubId = randomId();
+    const timeLeakNsfwHubId = randomId();
+    const timePasteTextHostId = randomId();
+    const timeCommunityDiscordId = randomId();
+    const timeRandomObfuscatedId = randomId();
+    const timeDefaultId = randomId();
+    const saveSettingsId = randomId();
+    const nextBtnId = randomId();
+    const cancelBtnId = randomId();
+    const errorMsgId = randomId();
+    const spinnerId = randomId();
+    const clickToCopyUrlId = randomId();
+    const copyStatusId = randomId();
+    const countdownId = randomId();
+
+    // Map for time input IDs
+    const timeIdMap = {
+        url_shortener: timeUrlShortenerId,
+        social_unlock: timeSocialUnlockId,
+        redirect_hub: timeRedirectHubId,
+        lootlabs_ecosystem: timeLootlabsEcosystemId,
+        mega_hub: timeMegaHubId,
+        leak_nsfw_hub: timeLeakNsfwHubId,
+        paste_text_host: timePasteTextHostId,
+        community_discord: timeCommunityDiscordId,
+        random_obfuscated: timeRandomObfuscatedId,
+        default: timeDefaultId
+    };
+
     // --- UTILS ---
     const isBypassSite = () => window.location.hostname === 'bypass.vip' && window.location.pathname.includes('userscript');
+
+    function hasCaptcha() {
+        const captchaSelectors = [
+            '[class*="captcha"]',
+            '[id*="captcha"]',
+            '.recaptcha',
+            '#recaptcha',
+            '.hcaptcha',
+            '#hcaptcha',
+            'iframe[src*="recaptcha"]',
+            'iframe[src*="hcaptcha"]',
+            'iframe[src*="cloudflare"]',
+            '[data-sitekey]',
+            '.cf-browser-verification'
+        ];
+        for (const selector of captchaSelectors) {
+            if (document.querySelector(selector)) return true;
+        }
+        return false;
+    }
 
     function showError(message) {
         if (document.body) {
@@ -294,9 +368,9 @@
 
     // --- UI: TOP CENTER (SINGLE LINE TOAST) ---
     function showBypassToast() {
-        if (document.getElementById('bypass-toast-notify')) return;
+        if (document.getElementById(toastId)) return;
         const toast = document.createElement('div');
-        toast.id = 'bypass-toast-notify';
+        toast.id = toastId;
         toast.style.cssText = `
             position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
             background: rgba(18, 18, 18, 0.9); color: white; padding: 8px 16px;
@@ -321,14 +395,14 @@
             <div style="display:flex; align-items:center; margin-bottom:10px;">
                 <img src="${BYPASS_LOGO}" style="width:20px; height:20px; margin-right:10px;">
                 <span style="font-weight:bold; color:#1E88E5; font-size:13px; flex-grow:1;">CLICK THE URL TO COPY:</span>
-                <span id="copyStatus" style="color:#2ecc71; font-size:11px; opacity:0; transition:0.3s;">Copied!</span>
+                <span id="${copyStatusId}" style="color:#2ecc71; font-size:11px; opacity:0; transition:0.3s;">Copied!</span>
             </div>
-            <div id="clickToCopyUrl" style="background:#000; padding:10px; border-radius:6px; word-break:break-all; font-family:monospace; font-size:12px; border:1px solid #444; color:#2ecc71; cursor:pointer;" aria-label="Click to copy" tabindex="0">${targetUrl}</div>
+            <div id="${clickToCopyUrlId}" style="background:#000; padding:10px; border-radius:6px; word-break:break-all; font-family:monospace; font-size:12px; border:1px solid #444; color:#2ecc71; cursor:pointer;" aria-label="Click to copy" tabindex="0">${targetUrl}</div>
         `;
         container.insertBefore(infoDiv, container.firstChild);
 
-        const urlBox = document.getElementById('clickToCopyUrl');
-        const status = document.getElementById('copyStatus');
+        const urlBox = document.getElementById(clickToCopyUrlId);
+        const status = document.getElementById(copyStatusId);
         urlBox.onclick = () => {
             GM_setClipboard(targetUrl);
             status.style.opacity = '1';
@@ -338,10 +412,10 @@
 
     function createContainer() {
         const container = document.createElement('div');
-        container.id = 'userscript-container';
+        container.id = containerId;
         container.style.cssText = `
             --primary-color: #1E88E5;
-            --bg-color: #121212;
+            --bg-color: rgba(18, 18, 18, 0.7);
             --text-color: #e0e0e0;
             --error-color: #ff4d4d;
             --success-color: #2ecc71;
@@ -370,37 +444,40 @@
         `;
         container.innerHTML = `
             <div style="position: absolute; top: 20px; right: 20px;">
-                <button id="settingsBtn" style="
+                <button id="${settingsBtnId}" style="
                     background: var(--bg-color); border: 1px solid var(--primary-color); color: var(--primary-color);
                     padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.9em;
                     transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.3);
                 ">⚙️ Settings</button>
-                <div id="settingsDropdown" style="
+                <div id="${settingsDropdownId}" style="
                     display: none; position: absolute; top: 40px; right: 0; background: #1e1e1e;
                     border: 1px solid #333; border-radius: 8px; padding: 15px; width: 250px; max-height: 500px; overflow-y: auto;
                     box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 2147483648;
                 ">
                     <label style="display: block; margin-bottom: 10px; color: var(--text-color);">
-                        <input id="advancedModeInput" type="checkbox" ${config.advancedMode ? 'checked' : ''}> Advanced Time Mode
+                        <input id="${advancedModeInputId}" type="checkbox" ${cfg.advancedMode ? 'checked' : ''}> Advanced Time Mode
                     </label>
                     <label style="display: block; margin-bottom: 10px; color: var(--text-color);">
-                        Global Time (seconds): <input id="timeInput" type="number" value="${config.globalTime}" style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;">
+                        <input id="${stealthModeInputId}" type="checkbox" ${cfg.stealthMode ? 'checked' : ''}> Stealth Mode (No UI)
                     </label>
                     <label style="display: block; margin-bottom: 10px; color: var(--text-color);">
-                        API Key: <input id="keyInput" type="text" value="${config.key}" style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;">
+                        Global Time (seconds): <input id="${timeInputId}" type="number" value="${cfg.globalTime}" style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;">
+                    </label>
+                    <label style="display: block; margin-bottom: 10px; color: var(--text-color);">
+                        API Key: <input id="${keyInputId}" type="text" value="${cfg.key}" style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;">
                     </label>
                     <h4 style="margin: 10px 0 5px 0; color: var(--text-color); font-size: 0.9em;">Advanced Wait Times (seconds):</h4>
-                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">url_shortener: <input id="time_url_shortener" type="number" value="${waitTimes.url_shortener}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
-                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">social_unlock: <input id="time_social_unlock" type="number" value="${waitTimes.social_unlock}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
-                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">redirect_hub: <input id="time_redirect_hub" type="number" value="${waitTimes.redirect_hub}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
-                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">lootlabs_ecosystem: <input id="time_lootlabs_ecosystem" type="number" value="${waitTimes.lootlabs_ecosystem}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
-                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">mega_hub: <input id="time_mega_hub" type="number" value="${waitTimes.mega_hub}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
-                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">leak_nsfw_hub: <input id="time_leak_nsfw_hub" type="number" value="${waitTimes.leak_nsfw_hub}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
-                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">paste_text_host: <input id="time_paste_text_host" type="number" value="${waitTimes.paste_text_host}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
-                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">community_discord: <input id="time_community_discord" type="number" value="${waitTimes.community_discord}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
-                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">random_obfuscated: <input id="time_random_obfuscated" type="number" value="${waitTimes.random_obfuscated}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
-                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">default: <input id="time_default" type="number" value="${waitTimes.default}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
-                    <button id="saveSettings" style="
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">url_shortener: <input id="${timeUrlShortenerId}" type="number" value="${wt.url_shortener}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">social_unlock: <input id="${timeSocialUnlockId}" type="number" value="${wt.social_unlock}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">redirect_hub: <input id="${timeRedirectHubId}" type="number" value="${wt.redirect_hub}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">lootlabs_ecosystem: <input id="${timeLootlabsEcosystemId}" type="number" value="${wt.lootlabs_ecosystem}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">mega_hub: <input id="${timeMegaHubId}" type="number" value="${wt.mega_hub}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">leak_nsfw_hub: <input id="${timeLeakNsfwHubId}" type="number" value="${wt.leak_nsfw_hub}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">paste_text_host: <input id="${timePasteTextHostId}" type="number" value="${wt.paste_text_host}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">community_discord: <input id="${timeCommunityDiscordId}" type="number" value="${wt.community_discord}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">random_obfuscated: <input id="${timeRandomObfuscatedId}" type="number" value="${wt.random_obfuscated}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">default: <input id="${timeDefaultId}" type="number" value="${wt.default}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
+                    <button id="${saveSettingsId}" style="
                         width: 100%; padding: 8px; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;
                         transition: background 0.3s;
                     ">Save</button>
@@ -409,9 +486,9 @@
             <img src="${BYPASS_LOGO}" style="width: 80px; height: 80px; margin-bottom: 20px; @media (max-width: 768px) { width: 60px; height: 60px; }">
             <h2 style="font-size: 2.5em; margin-bottom: 15px; color: #ffffff; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); @media (max-width: 768px) { font-size: 2em; }">BYPASS.VIP</h2>
             <p style="margin-bottom: 30px; font-size: 1.1em; color: #b0b0b0; max-width: 600px;">Click the button below to proceed to the bypassed link.</p>
-            <div id="countdown" style="font-size: 1.3em; margin-bottom: 30px; padding: 15px; background: #1e1e1e; border-radius: 12px; width: 90%; max-width: 600px; border: 1px solid #333; @media (max-width: 768px) { font-size: 1.1em; padding: 10px; }"></div>
+            <div id="${countdownId}" style="font-size: 1.3em; margin-bottom: 30px; padding: 15px; background: #1e1e1e; border-radius: 12px; width: 90%; max-width: 600px; border: 1px solid #333; @media (max-width: 768px) { font-size: 1.1em; padding: 10px; }"></div>
             <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
-                <button id="nextBtn" type="button" style="
+                <button id="${nextBtnId}" type="button" style="
                     padding: 15px 30px;
                     background-color: var(--primary-color);
                     color: #ffffff;
@@ -426,7 +503,7 @@
                     pointer-events: auto;
                     @media (max-width: 768px) { padding: 12px 24px; font-size: 1em; }
                 ">PROCEED</button>
-                <button id="cancelBtn" type="button" style="
+                <button id="${cancelBtnId}" type="button" style="
                     padding: 15px 30px;
                     background-color: #666;
                     color: #ffffff;
@@ -439,8 +516,8 @@
                     @media (max-width: 768px) { padding: 12px 24px; font-size: 1em; }
                 ">Cancel</button>
             </div>
-            <div id="errorMsg" style="color: var(--error-color); margin-top: 30px; display: none; font-size: 1.1em; background: #2a2a2a; padding: 15px; border-radius: 8px; border: 1px solid #444; max-width: 600px;"></div>
-            <div id="spinner" style="border: 5px solid #333333; border-top: 5px solid var(--primary-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; display: none; margin-top: 20px;"></div>
+            <div id="${errorMsgId}" style="color: var(--error-color); margin-top: 30px; display: none; font-size: 1.1em; background: #2a2a2a; padding: 15px; border-radius: 8px; border: 1px solid #444; max-width: 600px;"></div>
+            <div id="${spinnerId}" style="border: 5px solid #333333; border-top: 5px solid var(--primary-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; display: none; margin-top: 20px;"></div>
             <style>
                 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
                 #nextBtn:hover { background-color: #1565C0; transform: translateY(-3px); box-shadow: 0 8px 16px rgba(0,0,0,0.5); }
@@ -467,7 +544,7 @@
     }
 
     function showError(message) {
-        const errorEl = document.getElementById('errorMsg');
+        const errorEl = document.getElementById(errorMsgId);
         if (errorEl) {
             errorEl.textContent = message;
             errorEl.style.display = 'block';
@@ -496,7 +573,10 @@
 
             const currentDomain = window.location.hostname;
             const category = getDomainCategory(currentDomain);
-            const waitTime = config.advancedMode ? (waitTimes[category] || waitTimes.default) : config.globalTime;
+            let waitTime = cfg.advancedMode ? (wt[category] || wt.default) : cfg.globalTime;
+            // Add randomization to avoid detection
+            waitTime += Math.floor(Math.random() * 6) - 3; // Randomize -3 to +2 seconds
+            waitTime = Math.max(1, waitTime); // Ensure at least 1 second
 
             if (isBypassSite()) {
                 const targetUrl = urlParams.get('url');
@@ -507,11 +587,14 @@
             const rawRedirect = urlParams.get('redirect');
 
             if (!rawRedirect) {
-                showBypassToast();
+                if (!cfg.stealthMode) {
+                    showBypassToast();
+                }
+                const randomDelay = cfg.stealthMode ? Math.random() * 2000 + 500 : 800; // Randomize delay in stealth
                 setTimeout(() => {
-                    const targetUrl = `https://bypass.vip/userscript.html?url=${encodeURIComponent(location.href)}&time=${waitTime}&key=${config.key}&safe=${config.safeMode}`;
+                    const targetUrl = `https://bypass.vip/userscript.html?url=${encodeURIComponent(location.href)}&time=${waitTime}&key=${cfg.key}&safe=${cfg.safeMode}&rnd=${Math.random().toString(36).substr(2, 9)}`;
                     location.replace(targetUrl);
-                }, 800);
+                }, randomDelay);
                 return;
             }
 
@@ -540,24 +623,38 @@
                 document.documentElement.appendChild(container);
             }
 
+            // Semi-hide UI if captcha is detected
+            if (hasCaptcha()) {
+                container.style.opacity = '0.5';
+                container.style.pointerEvents = 'none';
+            }
+            setTimeout(() => {
+                if (hasCaptcha()) {
+                    container.style.opacity = '0.5';
+                    container.style.pointerEvents = 'none';
+                }
+            }, 2000);
+
             // Settings dropdown toggle
-            const settingsBtn = container.querySelector('#settingsBtn');
-            const settingsDropdown = container.querySelector('#settingsDropdown');
+            const settingsBtn = container.querySelector(`#${settingsBtnId}`);
+            const settingsDropdown = container.querySelector(`#${settingsDropdownId}`);
             settingsBtn.addEventListener('click', () => {
                 settingsDropdown.style.display = settingsDropdown.style.display === 'none' ? 'block' : 'none';
             });
 
-            const saveSettings = container.querySelector('#saveSettings');
+            const saveSettings = container.querySelector(`#${saveSettingsId}`);
             saveSettings.addEventListener('click', () => {
-                const advancedMode = document.getElementById('advancedModeInput').checked;
-                const globalTime = parseInt(document.getElementById('timeInput').value);
-                const key = document.getElementById('keyInput').value;
+                const advancedMode = document.getElementById(advancedModeInputId).checked;
+                const stealthMode = document.getElementById(stealthModeInputId).checked;
+                const globalTime = parseInt(document.getElementById(timeInputId).value);
+                const key = document.getElementById(keyInputId).value;
                 const waitTimesNew = {};
                 for (const cat of Object.keys(DEFAULT_WAIT_TIMES)) {
-                    const val = parseInt(document.getElementById(`time_${cat}`).value);
+                    const val = parseInt(document.getElementById(timeIdMap[cat]).value);
                     waitTimesNew[cat] = isNaN(val) ? DEFAULT_WAIT_TIMES[cat] : val;
                 }
                 GM_setValue('advancedMode', advancedMode);
+                GM_setValue('stealthMode', stealthMode);
                 GM_setValue('globalTime', globalTime);
                 GM_setValue('key', key);
                 GM_setValue('waitTimes', waitTimesNew);
@@ -566,16 +663,16 @@
             });
 
             // Cancel button
-            const cancelBtn = container.querySelector('#cancelBtn');
+            const cancelBtn = container.querySelector(`#${cancelBtnId}`);
             cancelBtn.addEventListener('click', () => {
                 if (confirm('Are you sure you want to cancel and reload?')) {
                     location.reload();
                 }
             });
 
-            const countdownEl = container.querySelector('#countdown');
-            const btn = container.querySelector('#nextBtn');
-            const spinner = container.querySelector('#spinner');
+            const countdownEl = container.querySelector(`#${countdownId}`);
+            const btn = container.querySelector(`#${nextBtnId}`);
+            const spinner = container.querySelector(`#${spinnerId}`);
 
             const newBtn = btn; // element is controlled by us; no need to clone
             const hasHash = (url) => {
@@ -614,13 +711,14 @@
                 try {
                     newBtn.disabled = true;
                     spinner.style.display = 'block';
+                    const randomDelay = Math.random() * 200 + 60; // Randomize 60-260ms
                     setTimeout(() => {
                         try {
                             window.location.assign(redirectUrl);
                         } catch (err) {
                             window.location.href = redirectUrl;
                         }
-                    }, 60);
+                    }, randomDelay);
                 } catch (err) {
                     showError('Redirect failed. Please copy and open the link manually: ' + redirectUrl);
                     newBtn.disabled = false;
