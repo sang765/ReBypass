@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name          BYPASS.VIP (REMAKE VERSION)
 // @namespace     bypass.vip
-// @version       1.4.7
+// @version       1.4.8
 // @author        sang765
-// @description   Bypass ad-links using the bypass.vip API and get to your destination without ads!
+// @description   Bypass ad-links using the bypass.vip API and get to your destination without ads! Includes stealth mode, randomization, and obfuscation for harder detection by anti-bypass systems.
 // @grant         GM_setClipboard
 // @grant         GM_info
 // @grant         GM_setValue
@@ -246,20 +246,27 @@
         return 'default';
     }
 
-    const config = {
+    const cfg = {
         advancedMode: GM_getValue('advancedMode', true),
         globalTime: GM_getValue('globalTime', 25),
         key: GM_getValue('key', ''),
-        safeMode: GM_getValue('safeMode', true)
+        safeMode: GM_getValue('safeMode', true),
+        stealthMode: GM_getValue('stealthMode', false)
     };
 
-    const waitTimes = GM_getValue('waitTimes', DEFAULT_WAIT_TIMES);
+    const wt = GM_getValue('waitTimes', DEFAULT_WAIT_TIMES);
 
     // Menu commands for settings
     GM_registerMenuCommand('Toggle Advanced Time Mode', () => {
         const current = GM_getValue('advancedMode', true);
         GM_setValue('advancedMode', !current);
         alert(`Advanced Time Mode ${!current ? 'enabled' : 'disabled'}. Reload the page to apply.`);
+    });
+
+    GM_registerMenuCommand('Toggle Stealth Mode', () => {
+        const current = GM_getValue('stealthMode', false);
+        GM_setValue('stealthMode', !current);
+        alert(`Stealth Mode ${!current ? 'enabled' : 'disabled'}. Reload the page to apply.`);
     });
 
     GM_registerMenuCommand('Set Global Wait Time', () => {
@@ -381,25 +388,28 @@
                     box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 2147483648;
                 ">
                     <label style="display: block; margin-bottom: 10px; color: var(--text-color);">
-                        <input id="advancedModeInput" type="checkbox" ${config.advancedMode ? 'checked' : ''}> Advanced Time Mode
+                        <input id="advancedModeInput" type="checkbox" ${cfg.advancedMode ? 'checked' : ''}> Advanced Time Mode
                     </label>
                     <label style="display: block; margin-bottom: 10px; color: var(--text-color);">
-                        Global Time (seconds): <input id="timeInput" type="number" value="${config.globalTime}" style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;">
+                        <input id="stealthModeInput" type="checkbox" ${cfg.stealthMode ? 'checked' : ''}> Stealth Mode (No UI)
                     </label>
                     <label style="display: block; margin-bottom: 10px; color: var(--text-color);">
-                        API Key: <input id="keyInput" type="text" value="${config.key}" style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;">
+                        Global Time (seconds): <input id="timeInput" type="number" value="${cfg.globalTime}" style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;">
+                    </label>
+                    <label style="display: block; margin-bottom: 10px; color: var(--text-color);">
+                        API Key: <input id="keyInput" type="text" value="${cfg.key}" style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;">
                     </label>
                     <h4 style="margin: 10px 0 5px 0; color: var(--text-color); font-size: 0.9em;">Advanced Wait Times (seconds):</h4>
-                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">url_shortener: <input id="time_url_shortener" type="number" value="${waitTimes.url_shortener}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
-                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">social_unlock: <input id="time_social_unlock" type="number" value="${waitTimes.social_unlock}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
-                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">redirect_hub: <input id="time_redirect_hub" type="number" value="${waitTimes.redirect_hub}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
-                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">lootlabs_ecosystem: <input id="time_lootlabs_ecosystem" type="number" value="${waitTimes.lootlabs_ecosystem}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
-                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">mega_hub: <input id="time_mega_hub" type="number" value="${waitTimes.mega_hub}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
-                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">leak_nsfw_hub: <input id="time_leak_nsfw_hub" type="number" value="${waitTimes.leak_nsfw_hub}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
-                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">paste_text_host: <input id="time_paste_text_host" type="number" value="${waitTimes.paste_text_host}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
-                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">community_discord: <input id="time_community_discord" type="number" value="${waitTimes.community_discord}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
-                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">random_obfuscated: <input id="time_random_obfuscated" type="number" value="${waitTimes.random_obfuscated}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
-                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">default: <input id="time_default" type="number" value="${waitTimes.default}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">url_shortener: <input id="time_url_shortener" type="number" value="${wt.url_shortener}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">social_unlock: <input id="time_social_unlock" type="number" value="${wt.social_unlock}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">redirect_hub: <input id="time_redirect_hub" type="number" value="${wt.redirect_hub}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">lootlabs_ecosystem: <input id="time_lootlabs_ecosystem" type="number" value="${wt.lootlabs_ecosystem}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">mega_hub: <input id="time_mega_hub" type="number" value="${wt.mega_hub}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">leak_nsfw_hub: <input id="time_leak_nsfw_hub" type="number" value="${wt.leak_nsfw_hub}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">paste_text_host: <input id="time_paste_text_host" type="number" value="${wt.paste_text_host}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">community_discord: <input id="time_community_discord" type="number" value="${wt.community_discord}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">random_obfuscated: <input id="time_random_obfuscated" type="number" value="${wt.random_obfuscated}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">default: <input id="time_default" type="number" value="${wt.default}" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
                     <button id="saveSettings" style="
                         width: 100%; padding: 8px; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;
                         transition: background 0.3s;
@@ -496,7 +506,10 @@
 
             const currentDomain = window.location.hostname;
             const category = getDomainCategory(currentDomain);
-            const waitTime = config.advancedMode ? (waitTimes[category] || waitTimes.default) : config.globalTime;
+            let waitTime = cfg.advancedMode ? (wt[category] || wt.default) : cfg.globalTime;
+            // Add randomization to avoid detection
+            waitTime += Math.floor(Math.random() * 6) - 3; // Randomize -3 to +2 seconds
+            waitTime = Math.max(1, waitTime); // Ensure at least 1 second
 
             if (isBypassSite()) {
                 const targetUrl = urlParams.get('url');
@@ -507,11 +520,14 @@
             const rawRedirect = urlParams.get('redirect');
 
             if (!rawRedirect) {
-                showBypassToast();
+                if (!cfg.stealthMode) {
+                    showBypassToast();
+                }
+                const randomDelay = cfg.stealthMode ? Math.random() * 2000 + 500 : 800; // Randomize delay in stealth
                 setTimeout(() => {
-                    const targetUrl = `https://bypass.vip/userscript.html?url=${encodeURIComponent(location.href)}&time=${waitTime}&key=${config.key}&safe=${config.safeMode}`;
+                    const targetUrl = `https://bypass.vip/userscript.html?url=${encodeURIComponent(location.href)}&time=${waitTime}&key=${cfg.key}&safe=${cfg.safeMode}&rnd=${Math.random().toString(36).substr(2, 9)}`;
                     location.replace(targetUrl);
-                }, 800);
+                }, randomDelay);
                 return;
             }
 
@@ -550,6 +566,7 @@
             const saveSettings = container.querySelector('#saveSettings');
             saveSettings.addEventListener('click', () => {
                 const advancedMode = document.getElementById('advancedModeInput').checked;
+                const stealthMode = document.getElementById('stealthModeInput').checked;
                 const globalTime = parseInt(document.getElementById('timeInput').value);
                 const key = document.getElementById('keyInput').value;
                 const waitTimesNew = {};
@@ -558,6 +575,7 @@
                     waitTimesNew[cat] = isNaN(val) ? DEFAULT_WAIT_TIMES[cat] : val;
                 }
                 GM_setValue('advancedMode', advancedMode);
+                GM_setValue('stealthMode', stealthMode);
                 GM_setValue('globalTime', globalTime);
                 GM_setValue('key', key);
                 GM_setValue('waitTimes', waitTimesNew);
@@ -614,13 +632,14 @@
                 try {
                     newBtn.disabled = true;
                     spinner.style.display = 'block';
+                    const randomDelay = Math.random() * 200 + 60; // Randomize 60-260ms
                     setTimeout(() => {
                         try {
                             window.location.assign(redirectUrl);
                         } catch (err) {
                             window.location.href = redirectUrl;
                         }
-                    }, 60);
+                    }, randomDelay);
                 } catch (err) {
                     showError('Redirect failed. Please copy and open the link manually: ' + redirectUrl);
                     newBtn.disabled = false;
