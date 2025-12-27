@@ -287,6 +287,26 @@
     // --- UTILS ---
     const isBypassSite = () => window.location.hostname === 'bypass.vip' && window.location.pathname.includes('userscript');
 
+    function hasCaptcha() {
+        const captchaSelectors = [
+            '[class*="captcha"]',
+            '[id*="captcha"]',
+            '.recaptcha',
+            '#recaptcha',
+            '.hcaptcha',
+            '#hcaptcha',
+            'iframe[src*="recaptcha"]',
+            'iframe[src*="hcaptcha"]',
+            'iframe[src*="cloudflare"]',
+            '[data-sitekey]',
+            '.cf-browser-verification'
+        ];
+        for (const selector of captchaSelectors) {
+            if (document.querySelector(selector)) return true;
+        }
+        return false;
+    }
+
     function showError(message) {
         if (document.body) {
             document.body.innerHTML = `
@@ -555,6 +575,18 @@
             } else {
                 document.documentElement.appendChild(container);
             }
+
+            // Semi-hide UI if captcha is detected
+            if (hasCaptcha()) {
+                container.style.opacity = '0.5';
+                container.style.pointerEvents = 'none';
+            }
+            setTimeout(() => {
+                if (hasCaptcha()) {
+                    container.style.opacity = '0.5';
+                    container.style.pointerEvents = 'none';
+                }
+            }, 2000);
 
             // Settings dropdown toggle
             const settingsBtn = container.querySelector('#settingsBtn');
