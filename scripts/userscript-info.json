@@ -214,8 +214,8 @@
     "modules/EventManager.js",
     "modules/MainController.js"
   ],
-  "downloadURL": "https://raw.githubusercontent.com/sang765/ReBypass/main/ReBypass.user.js",
-  "updateURL": "https://raw.githubusercontent.com/sang765/ReBypass/main/ReBypass.user.js",
+  "downloadURL": "https://github.com/sang765/ReBypass/releases/latest/download/ReBypass.user.js",
+  "updateURL": "https://github.com/sang765/ReBypass/releases/latest/download/ReBypass.user.js",
   "homepageURL": "https://github.com/sang765/ReBypass",
   "icon": "https://www.google.com/s2/favicons?domain=bypass.vip&sz=64",
   "run-at": "document-start"
