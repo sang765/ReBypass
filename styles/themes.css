@@ -1,0 +1,21 @@
+/* Theme styles for ReBypass */
+
+/* Dark theme (default) */
+.bypass-dark {
+    --bg-color: rgba(18, 18, 18, 0.7);
+    --text-color: #e0e0e0;
+    --error-color: #ff4d4d;
+    --success-color: #2ecc71;
+    --primary-color: #1E88E5;
+}
+
+/* Light theme */
+.bypass-light {
+    --bg-color: rgba(255, 255, 255, 0.9);
+    --text-color: #333;
+    --error-color: #d32f2f;
+    --success-color: #388e3c;
+    --primary-color: #1976D2;
+}
+
+/* Additional theme variables can be added here */

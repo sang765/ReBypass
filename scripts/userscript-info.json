@@ -1,7 +1,7 @@
 {
   "name": "BYPASS.VIP (REMAKE VERSION)",
   "namespace": "bypass.vip",
-  "version": "1.4.7",
+  "version": "1.5.0",
   "author": "sang765",
   "description": "Bypass ad-links using the bypass.vip API and get to your destination without ads!",
   "grants": [
@@ -19,8 +19,17 @@
     "*://workink.one/token/*",
     "*://workink.me/token/*"
   ],
-  "downloadURL": "https://raw.githubusercontent.com/sang765/ReBypass/main/ReBypass.user.js",
-  "updateURL": "https://raw.githubusercontent.com/sang765/ReBypass/main/ReBypass.user.js",
+  "matches": [],
+  "requires": [
+    "modules/ConfigManager.js",
+    "modules/Utils.js",
+    "modules/UIManager.js",
+    "modules/ErrorHandler.js",
+    "modules/EventManager.js",
+    "modules/MainController.js"
+  ],
+  "downloadURL": "https://github.com/sang765/ReBypass/releases/latest/download/ReBypass.user.js",
+  "updateURL": "https://github.com/sang765/ReBypass/releases/latest/download/ReBypass.user.js",
   "homepageURL": "https://github.com/sang765/ReBypass",
   "icon": "https://www.google.com/s2/favicons?domain=bypass.vip&sz=64",
   "run-at": "document-start"
