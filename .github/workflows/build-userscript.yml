@@ -18,6 +18,9 @@ jobs:
       with:
         node-version: '18'
 
+    - name: Sync match patterns
+      run: node scripts/sync-matches.js
+
     - name: Build userscript
       run: node build.js
 
