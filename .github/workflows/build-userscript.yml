@@ -3,7 +3,6 @@ name: Build Userscript
 on:
   release:
     types: [published]
-  workflow_dispatch:
 
 jobs:
   release-build:
@@ -33,12 +32,7 @@ jobs:
           const path = require('path');
 
           // Get version
-          let version;
-          if (context.eventName === 'release') {
-            version = context.payload.release.tag_name;
-          } else {
-            version = `manual-${context.runNumber}`;
-          }
+          const version = context.payload.release.tag_name;
 
           // Get date
           const date = new Date().toISOString().split('T')[0].replace(/-/g, '/');
@@ -80,30 +74,6 @@ jobs:
       with:
         name: ReBypass.user.js
         path: ReBypass.user.js
-
-    - name: Create release on manual build
-      id: create_release
-      if: github.event_name == 'workflow_dispatch'
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ steps.release_info.outputs.version }}
-        release_name: ${{ steps.release_info.outputs.title }}
-        body: ${{ steps.release_info.outputs.body }}
-        draft: false
-        prerelease: true
-
-    - name: Upload to manual release
-      if: github.event_name == 'workflow_dispatch'
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./ReBypass.user.js
-        asset_name: ReBypass.user.js
-        asset_content_type: application/javascript
 
     - name: Update release with changelog
       if: github.event_name == 'release'
