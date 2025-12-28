@@ -1,8 +1,32 @@
 const fs = require('fs');
 const path = require('path');
 
-// Read metadata from main.js
-const metadata = fs.readFileSync('main.js', 'utf8').split('\n').slice(0, -3).join('\n') + '\n// ==/UserScript==\n\n';
+// Read metadata from scripts/userscript-info.json
+const info = JSON.parse(fs.readFileSync('scripts/userscript-info.json', 'utf8'));
+let metadata = '// ==UserScript==\n';
+metadata += `// @name          ${info.name}\n`;
+metadata += `// @namespace     ${info.namespace}\n`;
+metadata += `// @version       ${info.version}\n`;
+metadata += `// @author        ${info.author}\n`;
+metadata += `// @description   ${info.description}\n`;
+for (let grant of info.grants) {
+    metadata += `// @grant         ${grant}\n`;
+}
+for (let match of info.matches) {
+    metadata += `// @match         ${match}\n`;
+}
+for (let exclude of info.excludes) {
+    metadata += `// @exclude       ${exclude}\n`;
+}
+metadata += `// @downloadURL   ${info.downloadURL}\n`;
+metadata += `// @updateURL     ${info.updateURL}\n`;
+metadata += `// @homepageURL   ${info.homepageURL}\n`;
+metadata += `// @icon          ${info.icon}\n`;
+metadata += `// @run-at        ${info["run-at"]}\n`;
+for (let req of info.requires || []) {
+    metadata += `// @require       ${req}\n`;
+}
+metadata += '// ==/UserScript==\n\n';
 
 // Add module
 const modules = [
