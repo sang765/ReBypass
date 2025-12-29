@@ -85,14 +85,19 @@ class MainController {
     }
 
     static validateAndDecodeUrl(url) {
+        let candidateUrl = url;
         try {
             const decoded = decodeURIComponent(url);
             if (Utils.isValidUrl(decoded)) {
-                return decoded;
-            } else {
-                throw new Error('Invalid URL after decoding');
+                candidateUrl = decoded;
             }
         } catch (err) {
+            // decodeURIComponent failed, use original
+        }
+
+        if (Utils.isValidUrl(candidateUrl)) {
+            return candidateUrl;
+        } else {
             ErrorHandler.showCriticalError('Error: Invalid or malformed redirect URL. Please try again.');
             return null;
         }
