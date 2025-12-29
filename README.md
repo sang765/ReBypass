@@ -4,7 +4,7 @@
 
 <h1>REBYPASS</h1>
 
-![GitHub stars](https://img.shields.io/github/stars/sang765/ReBypass)  
+![GitHub stars](https://img.shields.io/github/stars/sang765/ReBypass)
 ![GitHub forks](https://img.shields.io/github/forks/sang765/ReBypass)  
 ![GitHub issues](https://img.shields.io/github/issues/sang765/ReBypass)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/sang765/ReBypass)
