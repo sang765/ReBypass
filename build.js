@@ -15,6 +15,9 @@ for (let grant of info.grants) {
 for (let match of info.matches) {
     metadata += `// @match         ${match}\n`;
 }
+for (let customMatch of info.custom_matches) {
+    metadata += `// @match         ${customMatch}\n`;
+}
 for (let exclude of info.excludes) {
     metadata += `// @exclude       ${exclude}\n`;
 }

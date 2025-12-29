@@ -19,7 +19,8 @@
     "*://workink.one/token/*",
     "*://workink.me/token/*"
   ],
-  "matches": [
+  "matches": [],
+  "custom_matches": [
     "*://bypass.vip/userscript*"
   ],
   "requires": [
