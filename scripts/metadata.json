@@ -23,14 +23,7 @@
   "custom_matches": [
     "*://bypass.vip/userscript*"
   ],
-  "requires": [
-    "modules/ConfigManager.js",
-    "modules/Utils.js",
-    "modules/UIManager.js",
-    "modules/ErrorHandler.js",
-    "modules/EventManager.js",
-    "modules/MainController.js"
-  ],
+  "requires": [],
   "downloadURL": "https://github.com/sang765/ReBypass/releases/latest/download/ReBypass.user.js",
   "updateURL": "https://github.com/sang765/ReBypass/releases/latest/download/ReBypass.user.js",
   "homepageURL": "https://github.com/sang765/ReBypass",
