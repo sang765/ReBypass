@@ -2,7 +2,7 @@
 
 <img src=".github/assets/favicon-nobg-dark.png" alt="Logo" width="200">
 
-<h1>BYPASS.VIP Userscript (Remake)</h1>
+<h1>REBYPASS</h1>
 
 ![GitHub stars](https://img.shields.io/github/stars/sang765/ReBypass)  
 ![GitHub forks](https://img.shields.io/github/forks/sang765/ReBypass)  
@@ -34,13 +34,17 @@ This is a remake of the official userscript for [bypass.vip](https://bypass.vip)
    - [Greasemonkey](https://www.greasespot.net/) (for Firefox)
    - [Violentmonkey](https://violentmonkey.github.io/) (alternative option)
 
-2. Once installed, click on the userscript manager icon in your browser toolbar and select "Create a new script" or "Add new script".
+2. Install directly from the latest release: [Install Script](https://github.com/sang765/ReBypass/releases/latest/download/ReBypass.user.js)
 
-3. Copy and paste the contents of [`bypass-vip.user.js`](bypass-vip.user.js) into the editor.
+## Building the Userscript
 
-4. Save the script. The userscript will now be active on supported websites.
+To build the userscript locally or contribute to the development:
 
-Alternatively, you can install directly from the raw GitHub URL: [Install Script](https://raw.githubusercontent.com/sang765/ReBypass/main/bypass-vip.user.js)
+1. Clone the repository: `git clone https://github.com/sang765/ReBypass.git`
+2. Navigate to the project directory: `cd ReBypass`
+3. Run the build script: `node build.js`
+4. The built userscript `ReBypass.user.js` will be created in the root directory.
+5. Follow the installation steps above using the built file.
 
 ## Usage
 
@@ -51,7 +55,7 @@ Alternatively, you can install directly from the raw GitHub URL: [Install Script
 
 ## Supported Sites
 
-You can check in **[userscript](./bypass-vip.user.js)** file or in **[this](https://sang765.github.io/ReBypass/)**
+You can check in this [this](https://github.com/bypass-vip/userscript/blob/main/bypass-vip.user.js)
 
 ## Configuration
 
