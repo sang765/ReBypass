@@ -1,13 +1,12 @@
 class EventManager {
-    constructor(uiManager, redirectUrl) {
-        this.uiManager = uiManager;
+    constructor(redirectUrl) {
         this.redirectUrl = redirectUrl;
         this.isRedirecting = false;
     }
 
     setupButtonEvents() {
-        const btn = document.getElementById(this.uiManager.ids.nextBtn);
-        const cancelBtn = document.getElementById(this.uiManager.ids.cancelBtn);
+        const btn = document.getElementById(UIManager.ids.nextBtn);
+        const cancelBtn = document.getElementById(UIManager.ids.cancelBtn);
 
         if (btn) {
             // Click
@@ -38,8 +37,8 @@ class EventManager {
     }
 
     setupSettingsEvents() {
-        const settingsBtn = document.getElementById(this.uiManager.ids.settingsBtn);
-        const settingsDropdown = document.getElementById(this.uiManager.ids.settingsDropdown);
+        const settingsBtn = document.getElementById(UIManager.ids.settingsBtn);
+        const settingsDropdown = document.getElementById(UIManager.ids.settingsDropdown);
 
         if (settingsBtn && settingsDropdown) {
             settingsBtn.addEventListener('click', () => {
@@ -63,8 +62,8 @@ class EventManager {
         if (this.isRedirecting || !this.redirectUrl) return;
 
         this.isRedirecting = true;
-        this.uiManager.disableProceedButton();
-        this.uiManager.showSpinner();
+        UIManager.disableProceedButton();
+        UIManager.showSpinner();
 
         this.performRedirect();
     }
@@ -81,8 +80,8 @@ class EventManager {
                 } catch (err2) {
                     ErrorHandler.handleRedirectFailure(this.redirectUrl);
                     this.isRedirecting = false;
-                    this.uiManager.enableProceedButton();
-                    this.uiManager.hideSpinner();
+                    UIManager.enableProceedButton();
+                    UIManager.hideSpinner();
                 }
             }
         }, randomDelay);
@@ -93,7 +92,7 @@ class EventManager {
 
         let time = 8;
         const interval = setInterval(() => {
-            this.uiManager.updateCountdown(
+            UIManager.updateCountdown(
                 `YOU HAVE EXACTLY ${time} SECONDS TO CLICK THE BUTTON BEFORE YOUR HASH EXPIRES`,
                 '#ff4d4d'
             );
@@ -101,9 +100,9 @@ class EventManager {
             time--;
             if (time < 0) {
                 clearInterval(interval);
-                this.uiManager.updateCountdown('HASH EXPIRED. RETRYING...');
-                this.uiManager.disableProceedButton();
-                this.uiManager.showSpinner();
+                UIManager.updateCountdown('HASH EXPIRED. RETRYING...');
+                UIManager.disableProceedButton();
+                UIManager.showSpinner();
 
                 setTimeout(() => {
                     location.replace(location.href.split('?')[0]);
