@@ -1,8 +1,14 @@
 const fs = require('fs');
 const path = require('path');
 
-// Read metadata from scripts/userscript-info.json
+// Read metadata from scripts/metadata.json
 const info = JSON.parse(fs.readFileSync('scripts/metadata.json', 'utf8'));
+
+// Sync version to package.json
+const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+packageJson.version = info.version;
+fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
+console.log('Synced version to package.json');
 let metadata = '// ==UserScript==\n';
 metadata += `// @name          ${info.name}\n`;
 metadata += `// @namespace     ${info.namespace}\n`;
