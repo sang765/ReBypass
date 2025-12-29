@@ -27,6 +27,13 @@ class Utils {
         return false;
     }
 
+    static hasWorkinkChallenge() {
+        const workinkDomains = ['work.ink', 'workink.net', 'workink.me', 'workink.one'];
+        if (!workinkDomains.includes(window.location.hostname)) return false;
+        const challengeDiv = document.querySelector('.challenge-wrapper');
+        return challengeDiv && challengeDiv.textContent.trim() === 'Solve the challenge to access this site.';
+    }
+
     static isValidUrl(url) {
         try {
             new URL(url);

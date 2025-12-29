@@ -61,9 +61,10 @@ class UIManager {
             box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-size: 13px; font-weight: 500;
             pointer-events: none; backdrop-filter: blur(4px);
         `;
+        const message = Utils.hasWorkinkChallenge() ? 'Please complete captcha first!' : 'BYPASS.VIP: STARTING BYPASS...';
         toast.innerHTML = `
             <img src="${BYPASS_LOGO}" style="width:18px; height:18px; margin-right:10px;">
-            <span>BYPASS.VIP: STARTING BYPASS...</span>
+            <span>${message}</span>
         `;
         (document.body || document.documentElement).appendChild(toast);
     }

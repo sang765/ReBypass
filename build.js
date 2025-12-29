@@ -72,3 +72,8 @@ bundled += `
 // Create package file
 fs.writeFileSync('ReBypass.user.js', bundled);
 console.log('Build completed!');
+
+// Clean matches (remove regular matches but keep custom matches)
+info.matches = [];
+fs.writeFileSync('scripts/metadata.json', JSON.stringify(info, null, 2));
+console.log('Cleaned match patterns from metadata.json');

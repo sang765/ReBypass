@@ -1,0 +1,12 @@
+{
+  "name": "rebypass-build",
+  "version": "1.5.9",
+  "description": "Build script for ReBypass userscript",
+  "main": "build.js",
+  "scripts": {
+    "build": "node scripts/sync-matches.js && node build.js"
+  },
+  "dependencies": {
+    "badge-maker": "^3.3.1"
+  }
+}
