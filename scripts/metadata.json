@@ -1,9 +1,9 @@
 {
-  "name": "BYPASS.VIP (REMAKE VERSION)",
+  "name": "REBYPASS",
   "namespace": "bypass.vip",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "author": "sang765",
-  "description": "Bypass ad-links using the bypass.vip API and get to your destination without ads!",
+  "description": "Remake Version For Bypass.VIP Userscript. Bypass ad-links using the bypass.vip API and get to your destination without ads!",
   "grants": [
     "GM_setClipboard",
     "GM_info",
@@ -20,6 +20,9 @@
     "*://workink.me/token/*"
   ],
   "matches": [],
+  "custom_matches": [
+    "*://bypass.vip/userscript*"
+  ],
   "requires": [
     "modules/ConfigManager.js",
     "modules/Utils.js",

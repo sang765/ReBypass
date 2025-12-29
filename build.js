@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Read metadata from scripts/userscript-info.json
-const info = JSON.parse(fs.readFileSync('scripts/userscript-info.json', 'utf8'));
+const info = JSON.parse(fs.readFileSync('scripts/metadata.json', 'utf8'));
 let metadata = '// ==UserScript==\n';
 metadata += `// @name          ${info.name}\n`;
 metadata += `// @namespace     ${info.namespace}\n`;
@@ -14,6 +14,9 @@ for (let grant of info.grants) {
 }
 for (let match of info.matches) {
     metadata += `// @match         ${match}\n`;
+}
+for (let customMatch of info.custom_matches) {
+    metadata += `// @match         ${customMatch}\n`;
 }
 for (let exclude of info.excludes) {
     metadata += `// @exclude       ${exclude}\n`;

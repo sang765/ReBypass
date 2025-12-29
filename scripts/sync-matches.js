@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const URL = 'https://raw.githubusercontent.com/bypass-vip/userscript/main/bypass-vip.user.js';
-const JSON_FILE = path.join(__dirname, 'userscript-info.json');
+const JSON_FILE = path.join(__dirname, 'metadata.json');
 
 function fetchUserscript() {
     return new Promise((resolve, reject) => {
