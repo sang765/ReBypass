@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Read metadata from scripts/userscript-info.json
-const info = JSON.parse(fs.readFileSync('scripts/userscript-info.json', 'utf8'));
+const info = JSON.parse(fs.readFileSync('scripts/metadata.json', 'utf8'));
 let metadata = '// ==UserScript==\n';
 metadata += `// @name          ${info.name}\n`;
 metadata += `// @namespace     ${info.namespace}\n`;
