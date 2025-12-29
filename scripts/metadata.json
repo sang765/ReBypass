@@ -1,7 +1,7 @@
 {
   "name": "REBYPASS",
   "namespace": "bypass.vip",
-  "version": "1.5.8",
+  "version": "1.5.9",
   "author": "sang765",
   "description": "Yes, another bypass userscript. This is a fork of bypass-vip/userscript",
   "grants": [
