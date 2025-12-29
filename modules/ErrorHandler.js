@@ -1,8 +1,4 @@
 class ErrorHandler {
-    /**
-     * Shows a critical error and replaces the page content.
-     * @param {string} message - Error message.
-     */
     static showCriticalError(message) {
         if (document.body) {
             document.body.innerHTML = `
@@ -13,46 +9,6 @@ class ErrorHandler {
                 </div>`;
         }
         console.error('Userscript error:', message);
-    }
-
-    /**
-     * Handles redirect failures with user feedback.
-     * @param {string} redirectUrl - The URL that failed to redirect.
-     */
-    static handleRedirectFailure(redirectUrl) {
-        UIManager.showError('Redirect failed. Please copy and open the link manually: ' + redirectUrl);
-    }
-
-    static logError(context, error) {
-        console.error(`[ReBypass Error] ${context}:`, {
-            error: error.message,
-            stack: error.stack,
-            url: window.location.href,
-            timestamp: new Date().toISOString()
-        });
-    }
-
-    static showToast(message, type = 'error') {
-        const colors = {
-            error: '#ff4d4d',
-            warning: '#ff9800',
-            info: '#2196f3',
-            success: '#4caf50'
-        };
-
-        const toast = document.createElement('div');
-        toast.textContent = message;
-        toast.style.cssText = `
-            position: fixed; top: 20px; right: 20px;
-            background: ${colors[type]}; color: white;
-            padding: 12px 20px; border-radius: 6px;
-            z-index: 2147483647; font-family: sans-serif;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            animation: slideIn 0.3s ease;
-        `;
-
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 5000);
     }
 }
 
