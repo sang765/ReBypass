@@ -107,6 +107,13 @@ class MainController {
         document.body.appendChild(container);
         document.body.setAttribute('data-bypass-injected', 'true');
 
+        UIManager.bindSettingsHandlers((settings) => {
+            ConfigManager.saveConfig(settings.config);
+            ConfigManager.saveWaitTimes(settings.waitTimes);
+            // Reload to apply settings
+            location.reload();
+        });
+
         this.setupEventListeners(redirectUrl);
 
         if (this.config.autoProceed && !Utils.hasHash(redirectUrl)) {
@@ -122,7 +129,19 @@ class MainController {
     }
 
     static setupAutoProceed(redirectUrl) {
-        // Auto-proceed logic
+        let time = 3; // Auto-proceed after 3 seconds
+        const interval = setInterval(() => {
+            UIManager.updateCountdown(`AUTO-PROCEEDING IN ${time} SECONDS...`, '#2ecc71');
+            time--;
+            if (time < 0) {
+                clearInterval(interval);
+                // Auto-click the proceed button
+                const btn = document.getElementById(UIManager.ids.nextBtn);
+                if (btn && !btn.disabled) {
+                    btn.click();
+                }
+            }
+        }, 1000);
     }
 
     static getWaitTime() {

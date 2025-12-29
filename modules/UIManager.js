@@ -322,8 +322,44 @@ class UIManager {
     }
 
     static getCurrentSettings() {
-        // Implementation to extract from form
-        return {};
+        const config = {};
+        const waitTimes = {};
+
+        // Get config values
+        const advancedModeInput = document.getElementById(this.ids.advancedModeInput);
+        const stealthModeInput = document.getElementById(this.ids.stealthModeInput);
+        const themeInput = document.getElementById(this.ids.themeInput);
+        const autoProceedInput = document.getElementById(this.ids.autoProceedInput);
+        const timeInput = document.getElementById(this.ids.timeInput);
+        const keyInput = document.getElementById(this.ids.keyInput);
+
+        if (advancedModeInput) config.advancedMode = advancedModeInput.checked;
+        if (stealthModeInput) config.stealthMode = stealthModeInput.checked;
+        if (themeInput) config.theme = themeInput.checked ? 'light' : 'dark';
+        if (autoProceedInput) config.autoProceed = autoProceedInput.checked;
+        if (timeInput) config.globalTime = parseInt(timeInput.value) || 25;
+        if (keyInput) config.key = keyInput.value;
+
+        // Get wait times
+        const timeInputs = {
+            url_shortener: this.ids.timeUrlShortener,
+            social_unlock: this.ids.timeSocialUnlock,
+            redirect_hub: this.ids.timeRedirectHub,
+            lootlabs_ecosystem: this.ids.timeLootlabsEcosystem,
+            mega_hub: this.ids.timeMegaHub,
+            leak_nsfw_hub: this.ids.timeLeakNsfwHub,
+            paste_text_host: this.ids.timePasteTextHost,
+            community_discord: this.ids.timeCommunityDiscord,
+            random_obfuscated: this.ids.timeRandomObfuscated,
+            default: this.ids.timeDefault
+        };
+
+        for (const [key, id] of Object.entries(timeInputs)) {
+            const input = document.getElementById(id);
+            if (input) waitTimes[key] = parseInt(input.value) || 0;
+        }
+
+        return { config, waitTimes };
     }
 }
 
