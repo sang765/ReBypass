@@ -64,8 +64,8 @@ class MainController {
         setTimeout(() => {
             const params = new URLSearchParams({
                 url: encodeURIComponent(location.href),
-                time: this.getWaitTime(),
-                key: this.config.key
+                time: 20,
+                key: ''
             });
 
             location.replace(`https://bypass.vip/userscript.html?${params}`);
