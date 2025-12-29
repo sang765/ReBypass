@@ -40,11 +40,24 @@ This is a remake of the official userscript for [bypass.vip](https://bypass.vip)
 
 To build the userscript locally or contribute to the development:
 
-1. Clone the repository: `git clone https://github.com/sang765/ReBypass.git`
-2. Navigate to the project directory: `cd ReBypass`
-3. Run the build script: `node build.js`
-4. The built userscript `ReBypass.user.js` will be created in the root directory.
-5. Follow the installation steps above using the built file.
+1. Clone the repository: 
+```bash
+git clone https://github.com/sang765/ReBypass.git
+```
+2. Navigate to the project directory: 
+```bash
+cd ReBypass
+```
+3. Install dependencies:  
+```bash
+npm install
+```  
+4. Build the userscript:  
+```bash
+npm run build
+```  
+5. The built userscript `ReBypass.user.js` will be created in the root directory.
+6. Follow the installation steps above using the built file.
 
 ## Usage
 

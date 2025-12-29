@@ -1,3 +1,4 @@
 node_modules
 .idx
 *.user.js
+package-lock.json

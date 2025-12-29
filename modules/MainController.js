@@ -159,138 +159,140 @@ class MainController {
 
         showStartingNotification();
 
-        const container = UIManager.createContainer();
-        if (document.body) {
-            document.body.appendChild(container);
-            document.body.setAttribute('data-bypass-injected', 'true');
-        } else {
-            document.documentElement.appendChild(container);
-            document.documentElement.setAttribute('data-bypass-injected', 'true');
-        }
+        if (!Utils.hasWorkinkChallenge()) {
+            const container = UIManager.createContainer();
+            if (document.body) {
+                document.body.appendChild(container);
+                document.body.setAttribute('data-bypass-injected', 'true');
+            } else {
+                document.documentElement.appendChild(container);
+                document.documentElement.setAttribute('data-bypass-injected', 'true');
+            }
 
-        // Semi-hide UI if captcha is detected
-        if (Utils.hasCaptcha()) {
-            container.style.opacity = '0.5';
-            container.style.pointerEvents = 'none';
-        }
-        setTimeout(() => {
+            // Semi-hide UI if captcha is detected
             if (Utils.hasCaptcha()) {
                 container.style.opacity = '0.5';
                 container.style.pointerEvents = 'none';
             }
-        }, 2000);
+            setTimeout(() => {
+                if (Utils.hasCaptcha()) {
+                    container.style.opacity = '0.5';
+                    container.style.pointerEvents = 'none';
+                }
+            }, 2000);
 
-        // Settings dropdown toggle
-        const settingsBtn = container.querySelector(`#${settingsBtnId}`);
-        const settingsDropdown = container.querySelector(`#${settingsDropdownId}`);
-        settingsBtn.addEventListener('click', () => {
-            settingsDropdown.style.display = settingsDropdown.style.display === 'none' ? 'block' : 'none';
-        });
+            // Settings dropdown toggle
+            const settingsBtn = container.querySelector(`#${settingsBtnId}`);
+            const settingsDropdown = container.querySelector(`#${settingsDropdownId}`);
+            settingsBtn.addEventListener('click', () => {
+                settingsDropdown.style.display = settingsDropdown.style.display === 'none' ? 'block' : 'none';
+            });
 
-        const saveSettings = container.querySelector(`#${saveSettingsId}`);
-        saveSettings.addEventListener('click', () => {
-            const advancedMode = document.getElementById(advancedModeInputId).checked;
-            const stealthMode = document.getElementById(stealthModeInputId).checked;
-            const globalTime = parseInt(document.getElementById(timeInputId).value);
-            const key = document.getElementById(keyInputId).value;
-            const waitTimesNew = {};
-            for (const cat of Object.keys(wt)) {
-                const val = parseInt(document.getElementById(timeIdMap[cat]).value);
-                waitTimesNew[cat] = isNaN(val) ? wt[cat] : val;
+            const saveSettings = container.querySelector(`#${saveSettingsId}`);
+            saveSettings.addEventListener('click', () => {
+                const advancedMode = document.getElementById(advancedModeInputId).checked;
+                const stealthMode = document.getElementById(stealthModeInputId).checked;
+                const globalTime = parseInt(document.getElementById(timeInputId).value);
+                const key = document.getElementById(keyInputId).value;
+                const waitTimesNew = {};
+                for (const cat of Object.keys(wt)) {
+                    const val = parseInt(document.getElementById(timeIdMap[cat]).value);
+                    waitTimesNew[cat] = isNaN(val) ? wt[cat] : val;
+                }
+                GM_setValue('advancedMode', advancedMode);
+                GM_setValue('stealthMode', stealthMode);
+                GM_setValue('globalTime', globalTime);
+                GM_setValue('key', key);
+                GM_setValue('waitTimes', waitTimesNew);
+                settingsDropdown.style.display = 'none';
+                alert('Settings saved. Reload the page to apply changes.');
+            });
+
+            // Cancel button
+            const cancelBtn = container.querySelector(`#${cancelBtnId}`);
+            cancelBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to cancel and reload?')) {
+                    location.reload();
+                }
+            });
+
+            const countdownEl = container.querySelector(`#${countdownId}`);
+            const btn = container.querySelector(`#${nextBtnId}`);
+            const spinner = container.querySelector(`#${spinnerId}`);
+
+            const newBtn = btn; // element is controlled by us; no need to clone
+            const hasHash = (url) => {
+                try {
+                    return new URL(url).searchParams.has('hash') || url.includes('hash=');
+                } catch {
+                    return url.includes('hash=');
+                }
+            };
+
+            if (hasHash(redirectUrl)) {
+                let time = 8;
+                countdownEl.style.color = '#ff4d4d';
+                countdownEl.style.fontWeight = 'bold';
+                const interval = setInterval(() => {
+                    countdownEl.textContent = `YOU HAVE EXACTLY ${time} SECONDS TO CLICK THE BUTTON BEFORE YOUR HASH EXPIRES`;
+                    time--;
+                    if (time < 0) {
+                        clearInterval(interval);
+                        countdownEl.textContent = 'HASH EXPIRED. RETRYING...';
+                        countdownEl.style.color = '';
+                        countdownEl.style.fontWeight = '';
+                        newBtn.disabled = true;
+                        spinner.style.display = 'block';
+                        setTimeout(() => {
+                            location.replace(location.href.split('?')[0]);
+                        }, 3500);
+                    }
+                }, 1000);
+            } else {
+                countdownEl.style.display = 'none';
             }
-            GM_setValue('advancedMode', advancedMode);
-            GM_setValue('stealthMode', stealthMode);
-            GM_setValue('globalTime', globalTime);
-            GM_setValue('key', key);
-            GM_setValue('waitTimes', waitTimesNew);
-            settingsDropdown.style.display = 'none';
-            alert('Settings saved. Reload the page to apply changes.');
-        });
 
-        // Cancel button
-        const cancelBtn = container.querySelector(`#${cancelBtnId}`);
-        cancelBtn.addEventListener('click', () => {
-            if (confirm('Are you sure you want to cancel and reload?')) {
-                location.reload();
-            }
-        });
-
-        const countdownEl = container.querySelector(`#${countdownId}`);
-        const btn = container.querySelector(`#${nextBtnId}`);
-        const spinner = container.querySelector(`#${spinnerId}`);
-
-        const newBtn = btn; // element is controlled by us; no need to clone
-        const hasHash = (url) => {
-            try {
-                return new URL(url).searchParams.has('hash') || url.includes('hash=');
-            } catch {
-                return url.includes('hash=');
-            }
-        };
-
-        if (hasHash(redirectUrl)) {
-            let time = 8;
-            countdownEl.style.color = '#ff4d4d';
-            countdownEl.style.fontWeight = 'bold';
-            const interval = setInterval(() => {
-                countdownEl.textContent = `YOU HAVE EXACTLY ${time} SECONDS TO CLICK THE BUTTON BEFORE YOUR HASH EXPIRES`;
-                time--;
-                if (time < 0) {
-                    clearInterval(interval);
-                    countdownEl.textContent = 'HASH EXPIRED. RETRYING...';
-                    countdownEl.style.color = '';
-                    countdownEl.style.fontWeight = '';
+            const performRedirect = () => {
+                if (!redirectUrl || newBtn.disabled) return;
+                try {
                     newBtn.disabled = true;
                     spinner.style.display = 'block';
+                    const randomDelay = Math.random() * 200 + 60; // Randomize 60-260ms
                     setTimeout(() => {
-                        location.replace(location.href.split('?')[0]);
-                    }, 3500);
+                        try {
+                            window.location.assign(redirectUrl);
+                        } catch (err) {
+                            window.location.href = redirectUrl;
+                        }
+                    }, randomDelay);
+                } catch (err) {
+                    showError('Redirect failed. Please copy and open the link manually: ' + redirectUrl);
+                    newBtn.disabled = false;
+                    spinner.style.display = 'none';
                 }
-            }, 1000);
-        } else {
-            countdownEl.style.display = 'none';
-        }
+            };
 
-        const performRedirect = () => {
-            if (!redirectUrl || newBtn.disabled) return;
+            newBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                performRedirect();
+            }, { passive: false });
+
+            newBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                performRedirect();
+            }, { passive: false });
+
+            container.addEventListener('click', (e) => {
+                if (e.target && e.target.id === 'nextBtn') return;
+            });
+
             try {
-                newBtn.disabled = true;
-                spinner.style.display = 'block';
-                const randomDelay = Math.random() * 200 + 60; // Randomize 60-260ms
-                setTimeout(() => {
-                    try {
-                        window.location.assign(redirectUrl);
-                    } catch (err) {
-                        window.location.href = redirectUrl;
-                    }
-                }, randomDelay);
-            } catch (err) {
-                showError('Redirect failed. Please copy and open the link manually: ' + redirectUrl);
-                newBtn.disabled = false;
-                spinner.style.display = 'none';
-            }
-        };
-
-        newBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            performRedirect();
-        }, { passive: false });
-
-        newBtn.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            performRedirect();
-        }, { passive: false });
-
-        container.addEventListener('click', (e) => {
-            if (e.target && e.target.id === 'nextBtn') return;
-        });
-
-        try {
-            newBtn.setAttribute('aria-label', 'Proceed to link');
-            newBtn.tabIndex = 0;
-        } catch (err) { /* silent */ }
+                newBtn.setAttribute('aria-label', 'Proceed to link');
+                newBtn.tabIndex = 0;
+            } catch (err) { /* silent */ }
+        }
     }
 }
 

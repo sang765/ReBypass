@@ -1,8 +1,14 @@
 const fs = require('fs');
 const path = require('path');
 
-// Read metadata from scripts/userscript-info.json
+// Read metadata from scripts/metadata.json
 const info = JSON.parse(fs.readFileSync('scripts/metadata.json', 'utf8'));
+
+// Sync version to package.json
+const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+packageJson.version = info.version;
+fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
+console.log('Synced version to package.json');
 let metadata = '// ==UserScript==\n';
 metadata += `// @name          ${info.name}\n`;
 metadata += `// @namespace     ${info.namespace}\n`;
@@ -72,3 +78,8 @@ bundled += `
 // Create package file
 fs.writeFileSync('ReBypass.user.js', bundled);
 console.log('Build completed!');
+
+// Clean matches (remove regular matches but keep custom matches)
+info.matches = [];
+fs.writeFileSync('scripts/metadata.json', JSON.stringify(info, null, 2));
+console.log('Cleaned match patterns from metadata.json');
