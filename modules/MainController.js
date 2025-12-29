@@ -1,7 +1,6 @@
 class MainController {
     static config;
     static waitTimes;
-    static uiManager;
 
     /**
      * Initializes the script by loading classifications and running the main logic.
@@ -13,7 +12,6 @@ class MainController {
 
             this.config = ConfigManager.getConfig();
             this.waitTimes = ConfigManager.getWaitTimes();
-            this.uiManager = new UIManager(this.config);
 
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded',
@@ -51,13 +49,13 @@ class MainController {
     static handleBypassSite() {
         const targetUrl = Utils.getQueryParam('url');
         if (targetUrl) {
-            this.uiManager.injectBypassInfoUI(decodeURIComponent(targetUrl));
+            UIManager.injectBypassInfoUI(decodeURIComponent(targetUrl));
         }
     }
 
     static handleInitialRedirect() {
         if (!this.config.stealthMode) {
-            this.uiManager.showBypassToast();
+            UIManager.showBypassToast();
         }
 
         const randomDelay = this.config.stealthMode ?
@@ -82,7 +80,7 @@ class MainController {
 
         if (this.isAlreadyInjected()) return;
 
-        this.uiManager.showBypassToast();
+        UIManager.showBypassToast();
         this.injectUI(redirectUrl);
     }
 
@@ -105,7 +103,7 @@ class MainController {
     }
 
     static injectUI(redirectUrl) {
-        const container = this.uiManager.createContainer(this.config, this.waitTimes);
+        const container = UIManager.createContainer(this.config, this.waitTimes);
         document.body.appendChild(container);
         document.body.setAttribute('data-bypass-injected', 'true');
 
@@ -117,7 +115,10 @@ class MainController {
     }
 
     static setupEventListeners(redirectUrl) {
-        // This will be handled by EventManager
+        const eventManager = new EventManager(redirectUrl);
+        eventManager.setupButtonEvents();
+        eventManager.setupSettingsEvents();
+        eventManager.setupHashCountdown();
     }
 
     static setupAutoProceed(redirectUrl) {
