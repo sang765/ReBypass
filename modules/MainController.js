@@ -110,12 +110,16 @@ class MainController {
                 container.style.opacity = '0.5';
                 container.style.pointerEvents = 'none';
             }
-            setTimeout(() => {
-                if (Utils.hasCaptcha()) {
-                    container.style.opacity = '0.5';
-                    container.style.pointerEvents = 'none';
+            
+            // Auto-check and restore UI when captcha is resolved
+            const checkCaptchaInterval = setInterval(() => {
+                if (!Utils.hasCaptcha()) {
+                    // Restore UI when captcha is resolved
+                    container.style.opacity = '1';
+                    container.style.pointerEvents = 'auto';
+                    clearInterval(checkCaptchaInterval);
                 }
-            }, 2000);
+            }, 1000); // Check every second
 
             // Settings dropdown toggle
             const settingsBtn = container.querySelector(`#${settingsBtnId}`);
