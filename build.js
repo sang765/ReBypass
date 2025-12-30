@@ -35,7 +35,7 @@ metadata += `// @run-at        ${info["run-at"]}\n`;
 for (let req of info.requires || []) {
     metadata += `// @require       ${req}\n`;
 }
-metadata += '// ==/UserScript==\n\n';
+metadata += '// ==/UserScript==\n';
 
 // Add module
 const modules = [
@@ -52,10 +52,11 @@ let bundled = metadata;
 modules.forEach(modulePath => {
     const content = fs.readFileSync(modulePath, 'utf8');
     // Remove export/import statements
-    const cleaned = content
+    let cleaned = content
         .replace(/if \(typeof module !== 'undefined' && module.exports\) \{[\s\S]*?\}/g, '')
         .replace(/module\.exports = .*?;/g, '');
-    bundled += '\n\n' + cleaned;
+    cleaned = cleaned.trim();
+    bundled += '\n' + cleaned;
 });
 
 // Add main execution code
