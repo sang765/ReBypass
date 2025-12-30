@@ -33,9 +33,6 @@ const spinnerId = randomId();
 const clickToCopyUrlId = randomId();
 const copyStatusId = randomId();
 const countdownId = randomId();
-const debugOpacitySliderId = randomId();
-const debugAlwaysOpacityId = randomId();
-const debugPanelId = randomId();
 
 // Map for time input IDs
 const timeIdMap = {
