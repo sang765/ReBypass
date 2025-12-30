@@ -55,7 +55,7 @@ class UIManager {
         toast.className = 'bypass-toast';
         toast.style.cssText = `
             position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
-            background: rgba(18, 18, 18, 0.9); color: white; padding: 8px 16px;
+            background: rgba(18, 18, 18, 0.6); color: white; padding: 8px 16px;
             border-radius: 30px; border: 1px solid #1E88E5; z-index: 2147483647;
             display: flex; align-items: center; font-family: 'Segoe UI', sans-serif;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-size: 13px; font-weight: 500;
@@ -72,14 +72,14 @@ class UIManager {
     static injectBypassInfoUI(targetUrl) {
         const container = document.querySelector('.highlights-container') || document.body;
         const infoDiv = document.createElement('div');
-        infoDiv.style.cssText = `background:#1e1e1e; border:1px solid #333; border-radius:12px; padding:15px; margin:20px auto; max-width:600px; color:#fff; font-family:sans-serif;`;
+        infoDiv.style.cssText = `background: rgba(30,30,30,0.8); border:1px solid #333; border-radius:12px; padding:15px; margin:20px auto; max-width:600px; color:#fff; font-family:sans-serif;`;
         infoDiv.innerHTML = `
             <div style="display:flex; align-items:center; margin-bottom:10px;">
                 <img src="${BYPASS_LOGO}" style="width:20px; height:20px; margin-right:10px;">
                 <span style="font-weight:bold; color:#1E88E5; font-size:13px; flex-grow:1;">CLICK THE URL TO COPY:</span>
                 <span id="${copyStatusId}" style="color:#2ecc71; font-size:11px; opacity:0; transition:0.3s;">Copied!</span>
             </div>
-            <div id="${clickToCopyUrlId}" style="background:#000; padding:10px; border-radius:6px; word-break:break-all; font-family:monospace; font-size:12px; border:1px solid #444; color:#2ecc71; cursor:pointer;" aria-label="Click to copy" tabindex="0">${targetUrl}</div>
+            <div id="${clickToCopyUrlId}" style="background: rgba(0,0,0,0.8); padding:10px; border-radius:6px; word-break:break-all; font-family:monospace; font-size:12px; border:1px solid #444; color:#2ecc71; cursor:pointer;" aria-label="Click to copy" tabindex="0">${targetUrl}</div>
         `;
         container.insertBefore(infoDiv, container.firstChild);
 
@@ -93,11 +93,15 @@ class UIManager {
     }
 
     static createContainer() {
+        // Hide any existing toast notification
+        const existingToast = document.querySelector('.bypass-toast');
+        if (existingToast) existingToast.remove();
+
         const container = document.createElement('div');
         container.id = containerId;
         container.style.cssText = `
             --primary-color: #1E88E5;
-            --bg-color: rgba(18, 18, 18, 0.7);
+            --bg-color: rgba(18, 18, 18, 0.5);
             --text-color: #e0e0e0;
             --error-color: #ff4d4d;
             --success-color: #2ecc71;
@@ -128,7 +132,7 @@ class UIManager {
                     transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.3);
                 ">⚙️ Settings</button>
                 <div id="${settingsDropdownId}" style="
-                    display: none; position: absolute; top: 40px; right: 0; background: #1e1e1e;
+                    display: none; position: absolute; top: 40px; right: 0; background: rgba(30,30,30,0.8);
                     border: 1px solid #333; border-radius: 8px; padding: 15px; width: 250px; max-height: 500px; overflow-y: auto;
                     box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 2147483648;
                 ">
@@ -164,7 +168,7 @@ class UIManager {
             <img src="${BYPASS_LOGO}" style="width: 80px; height: 80px; margin-bottom: 20px;">
             <h2 style="font-size: 2.5em; margin-bottom: 15px; color: #ffffff; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">BYPASS.VIP</h2>
             <p style="margin-bottom: 30px; font-size: 1.1em; color: #b0b0b0; max-width: 600px;">Click the button below to proceed to the bypassed link.</p>
-            <div id="${countdownId}" style="font-size: 1.3em; margin-bottom: 30px; padding: 15px; background: #1e1e1e; border-radius: 12px; width: 90%; max-width: 600px; border: 1px solid #333;"></div>
+            <div id="${countdownId}" style="font-size: 1.3em; margin-bottom: 30px; padding: 15px; background: rgba(30,30,30,0.8); border-radius: 12px; width: 90%; max-width: 600px; border: 1px solid #333;"></div>
             <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
                 <button id="${nextBtnId}" type="button" style="
                     padding: 15px 30px;
@@ -192,7 +196,7 @@ class UIManager {
                     box-shadow: 0 6px 12px rgba(0,0,0,0.4);
                 ">Cancel</button>
             </div>
-            <div id="${errorMsgId}" style="color: var(--error-color); margin-top: 30px; display: none; font-size: 1.1em; background: #2a2a2a; padding: 15px; border-radius: 8px; border: 1px solid #444; max-width: 600px;"></div>
+            <div id="${errorMsgId}" style="color: var(--error-color); margin-top: 30px; display: none; font-size: 1.1em; background: rgba(42,42,42,0.8); padding: 15px; border-radius: 8px; border: 1px solid #444; max-width: 600px;"></div>
             <div id="${spinnerId}" style="border: 5px solid #333333; border-top: 5px solid var(--primary-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; display: none; margin-top: 20px;"></div>
             <style>
                 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
