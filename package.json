@@ -1,6 +1,6 @@
 {
   "name": "rebypass-build",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "description": "Build script for ReBypass userscript",
   "main": "build.js",
   "scripts": {

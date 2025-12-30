@@ -49,8 +49,7 @@ class MainController {
         const currentDomain = window.location.hostname;
         const category = ConfigManager.getDomainCategory(currentDomain);
         let waitTime = cfg.advancedMode ? (wt[category] || wt.default) : cfg.globalTime;
-        // Add randomization to avoid detection
-        waitTime += Math.floor(Math.random() * 6) - 3; // Randomize -3 to +2 seconds
+        // Use exact time from config without randomization
         waitTime = Math.max(1, waitTime); // Ensure at least 1 second
 
         if (Utils.isBypassSite()) {
@@ -62,14 +61,12 @@ class MainController {
         const rawRedirect = urlParams.get('redirect');
 
         if (!rawRedirect) {
-            if (!cfg.stealthMode) {
-                showStartingNotification();
-            }
-            const randomDelay = cfg.stealthMode ? Math.random() * 2000 + 500 : 800; // Randomize delay in stealth
+            showStartingNotification();
+            const delay = 800; // Fixed delay without stealth mode
             setTimeout(() => {
                 const targetUrl = `https://bypass.vip/userscript.html?url=${encodeURIComponent(location.href)}&time=${waitTime}&key=${cfg.key}&safe=${cfg.safeMode}&rnd=${Math.random().toString(36).substr(2, 9)}`;
                 location.replace(targetUrl);
-            }, randomDelay);
+            }, delay);
             return;
         }
 
@@ -130,13 +127,11 @@ class MainController {
 
             // Initialize settings with current config values
             const advancedModeInput = document.getElementById(advancedModeInputId);
-            const stealthModeInput = document.getElementById(stealthModeInputId);
             const timeInput = document.getElementById(timeInputId);
             const keyInput = document.getElementById(keyInputId);
 
             // Set initial values from config
             advancedModeInput.checked = cfg.advancedMode;
-            stealthModeInput.checked = cfg.stealthMode;
             timeInput.value = cfg.globalTime;
             keyInput.value = cfg.key;
 
@@ -149,7 +144,6 @@ class MainController {
             const saveSettings = container.querySelector(`#${saveSettingsId}`);
             saveSettings.addEventListener('click', () => {
                 const advancedMode = document.getElementById(advancedModeInputId).checked;
-                const stealthMode = document.getElementById(stealthModeInputId).checked;
                 const globalTime = parseInt(document.getElementById(timeInputId).value);
                 const key = document.getElementById(keyInputId).value;
                 const waitTimesNew = {};
@@ -158,14 +152,12 @@ class MainController {
                     waitTimesNew[cat] = isNaN(val) ? wt[cat] : val;
                 }
                 ConfigManager.setValue('advancedMode', advancedMode);
-                ConfigManager.setValue('stealthMode', stealthMode);
                 ConfigManager.setValue('globalTime', globalTime);
                 ConfigManager.setValue('key', key);
                 ConfigManager.setValue('waitTimes', waitTimesNew);
                 
                 // Update local config variables to reflect changes immediately
                 cfg.advancedMode = advancedMode;
-                cfg.stealthMode = stealthMode;
                 cfg.globalTime = globalTime;
                 cfg.key = key;
                 wt = waitTimesNew;

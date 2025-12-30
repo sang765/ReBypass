@@ -88,8 +88,7 @@ class ConfigManager {
             advancedMode: this.getValue('advancedMode', true),
             globalTime: this.getValue('globalTime', 25),
             key: this.getValue('key', ''),
-            safeMode: this.getValue('safeMode', true),
-            stealthMode: this.getValue('stealthMode', false)
+            safeMode: this.getValue('safeMode', true)
         };
     }
 
@@ -102,12 +101,6 @@ class ConfigManager {
             const current = this.getValue('advancedMode', true);
             this.setValue('advancedMode', !current);
             alert(`Advanced Time Mode ${!current ? 'enabled' : 'disabled'}. Reload the page to apply.`);
-        });
-
-        this.registerMenuCommand('Toggle Stealth Mode', () => {
-            const current = this.getValue('stealthMode', false);
-            this.setValue('stealthMode', !current);
-            alert(`Stealth Mode ${!current ? 'enabled' : 'disabled'}. Reload the page to apply.`);
         });
 
         this.registerMenuCommand('Set Global Wait Time', () => {
