@@ -143,11 +143,13 @@ class UIManager {
                     border: 1px solid #333; border-radius: 8px; padding: 15px; width: 250px; max-height: 500px; overflow-y: auto;
                     box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 2147483648;
                 ">
-                    <label style="display: block; margin-bottom: 10px; color: var(--text-color);">
-                        <input id="${advancedModeInputId}" type="checkbox"> Advanced Time Mode
+                    <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; color: var(--text-color); cursor: pointer;">
+                        <input id="${advancedModeInputId}" type="checkbox" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="cursor: pointer;">Advanced Time Mode</span>
                     </label>
-                    <label style="display: block; margin-bottom: 10px; color: var(--text-color);">
-                        <input id="${stealthModeInputId}" type="checkbox"> Stealth Mode (No UI)
+                    <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; color: var(--text-color); cursor: pointer;">
+                        <input id="${stealthModeInputId}" type="checkbox" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="cursor: pointer;">Stealth Mode (No UI)</span>
                     </label>
                     <label style="display: block; margin-bottom: 10px; color: var(--text-color);">
                         Global Time (seconds): <input id="${timeInputId}" type="number" style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;">
