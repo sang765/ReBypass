@@ -17,26 +17,6 @@ function showStartingNotification() {
     UIManager.showBypassToast();
 }
 
-function showCaptchaToast() {
-    if (document.querySelector('.bypass-toast')) return;
-    const toast = document.createElement('div');
-    toast.id = 'captcha-toast';
-    toast.className = 'bypass-toast';
-    toast.style.cssText = `
-        position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
-        background: rgba(18, 18, 18, 0.6); color: white; padding: 8px 16px;
-        border-radius: 30px; border: 1px solid #1E88E5; z-index: 2147483647;
-        display: flex; align-items: center; font-family: 'Segoe UI', sans-serif;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-size: 13px; font-weight: 500;
-        pointer-events: none; backdrop-filter: blur(4px);
-    `;
-    toast.innerHTML = `
-        <img src="${GM_info.script.icon}" style="width:18px; height:18px; margin-right:10px;">
-        <span>Please complete captcha first!</span>
-    `;
-    (document.body || document.documentElement).appendChild(toast);
-}
-
 function isValidUrl(url) {
     try {
         new URL(url);
@@ -68,25 +48,9 @@ class MainController {
 
         const currentDomain = window.location.hostname;
         const category = ConfigManager.getDomainCategory(currentDomain);
-        
-        let waitTime;
-        const timeModeConfig = ConfigManager.getTimeModeConfig();
-
-        if (timeModeConfig.mode === 'random' && ConfigManager.isRandomTimeValid()) {
-            // Use random time mode
-            waitTime = ConfigManager.getRandomWaitTime();
-        } else if (timeModeConfig.mode === 'classic') {
-            // Use classic fixed time mode
-            waitTime = cfg.globalTime;
-        } else { // advanced
-            // Use advanced time mode
-            waitTime = wt[category] || wt.default;
-        }
-
-        // Add randomization to avoid detection (only for non-random time mode)
-        if (timeModeConfig.mode !== 'random' || !ConfigManager.isRandomTimeValid()) {
-            waitTime += Math.floor(Math.random() * 6) - 3; // Randomize -3 to +2 seconds
-        }
+        let waitTime = cfg.advancedMode ? (wt[category] || wt.default) : cfg.globalTime;
+        // Add randomization to avoid detection
+        waitTime += Math.floor(Math.random() * 6) - 3; // Randomize -3 to +2 seconds
         waitTime = Math.max(1, waitTime); // Ensure at least 1 second
 
         if (Utils.isBypassSite()) {
@@ -129,17 +93,7 @@ class MainController {
             return;
         }
 
-        const isWorkink = ['work.ink', 'workink.net', 'workink.me', 'workink.one'].includes(window.location.hostname);
-        const hasCaptcha = Utils.hasCaptcha();
-
-        if (isWorkink && hasCaptcha) {
-            showCaptchaToast();
-            return;
-        }
-
-        // Hide existing toast
-        const existingToast = document.querySelector('.bypass-toast');
-        if (existingToast) existingToast.remove();
+        showStartingNotification();
 
         if (!Utils.hasWorkinkChallenge()) {
             const container = UIManager.createContainer();
@@ -170,98 +124,25 @@ class MainController {
                 settingsDropdown.style.display = settingsDropdown.style.display === 'none' ? 'block' : 'none';
             });
 
-            // Populate form with current configuration
-            const currentConfig = ConfigManager.getConfig();
-            const currentTimeModeConfig = ConfigManager.getTimeModeConfig();
-
-            document.getElementById(timeModeSelectId).value = currentConfig.timeMode;
-            document.getElementById(stealthModeInputId).checked = currentConfig.stealthMode;
-            document.getElementById(timeInputId).value = currentConfig.globalTime;
-            document.getElementById(classicTimeInputId).value = currentConfig.globalTime; // Use globalTime for classic
-            document.getElementById(keyInputId).value = currentConfig.key;
-
-            // Populate random time settings
-            document.getElementById(randomTimeMinId).value = currentTimeModeConfig.minTime;
-            document.getElementById(randomTimeMaxId).value = currentTimeModeConfig.maxTime;
-
-            // Update UI based on time mode
-            UIManager.updateTimeModeUI(currentConfig.timeMode);
-            
-            // Populate advanced time settings
-            for (const cat of Object.keys(wt)) {
-                const input = document.getElementById(timeIdMap[cat]);
-                if (input) {
-                    input.value = wt[cat];
-                }
-            }
-
             const saveSettings = container.querySelector(`#${saveSettingsId}`);
             saveSettings.addEventListener('click', () => {
-                const timeMode = document.getElementById(timeModeSelectId).value;
+                const advancedMode = document.getElementById(advancedModeInputId).checked;
                 const stealthMode = document.getElementById(stealthModeInputId).checked;
                 const globalTime = parseInt(document.getElementById(timeInputId).value);
-                const classicTime = parseInt(document.getElementById(classicTimeInputId).value);
                 const key = document.getElementById(keyInputId).value;
-
-                // Random time configuration
-                const randomTimeMin = parseInt(document.getElementById(randomTimeMinId).value);
-                const randomTimeMax = parseInt(document.getElementById(randomTimeMaxId).value);
-
-                // Validate random time settings if in random mode
-                const warnings = UIManager.validateRandomTime(randomTimeMin, randomTimeMax);
-                const warningEl = document.getElementById(randomTimeWarningId);
-
-                if (timeMode === 'random' && warnings.length > 0) {
-                    warningEl.style.display = 'block';
-                    warningEl.innerHTML = warnings.map(w => `• ${w}`).join('<br>');
-                    return;
-                } else {
-                    warningEl.style.display = 'none';
-                }
-
                 const waitTimesNew = {};
                 for (const cat of Object.keys(wt)) {
                     const val = parseInt(document.getElementById(timeIdMap[cat]).value);
                     waitTimesNew[cat] = isNaN(val) ? wt[cat] : val;
                 }
-
-                ConfigManager.setValue('timeMode', timeMode);
+                ConfigManager.setValue('advancedMode', advancedMode);
                 ConfigManager.setValue('stealthMode', stealthMode);
-                ConfigManager.setValue('randomTimeMin', randomTimeMin || 5);
-                ConfigManager.setValue('randomTimeMax', randomTimeMax || 30);
-                ConfigManager.setValue('globalTime', timeMode === 'classic' ? (classicTime || globalTime) : globalTime);
+                ConfigManager.setValue('globalTime', globalTime);
                 ConfigManager.setValue('key', key);
                 ConfigManager.setValue('waitTimes', waitTimesNew);
                 settingsDropdown.style.display = 'none';
                 alert('Settings saved. Reload the page to apply changes.');
             });
-
-            // Time Mode event handler
-            const timeModeSelect = container.querySelector(`#${timeModeSelectId}`);
-            timeModeSelect.addEventListener('change', (e) => {
-                UIManager.updateTimeModeUI(e.target.value);
-            });
-
-            // Random Time event handlers
-            const randomTimeMinInput = container.querySelector(`#${randomTimeMinId}`);
-            const randomTimeMaxInput = container.querySelector(`#${randomTimeMaxId}`);
-            const warningEl = container.querySelector(`#${randomTimeWarningId}`);
-
-            function validateAndShowWarnings() {
-                const minTime = parseInt(randomTimeMinInput.value) || 0;
-                const maxTime = parseInt(randomTimeMaxInput.value) || 0;
-                const warnings = UIManager.validateRandomTime(minTime, maxTime);
-
-                if (timeModeSelect.value === 'random' && warnings.length > 0) {
-                    warningEl.style.display = 'block';
-                    warningEl.innerHTML = warnings.map(w => `• ${w}`).join('<br>');
-                } else {
-                    warningEl.style.display = 'none';
-                }
-            }
-
-            randomTimeMinInput.addEventListener('input', validateAndShowWarnings);
-            randomTimeMaxInput.addEventListener('input', validateAndShowWarnings);
 
             // Cancel button
             const cancelBtn = container.querySelector(`#${cancelBtnId}`);
