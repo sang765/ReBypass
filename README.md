@@ -4,10 +4,13 @@
 
 <h1>REBYPASS</h1>
 
-![GitHub stars](https://img.shields.io/github/stars/sang765/ReBypass)
-![GitHub forks](https://img.shields.io/github/forks/sang765/ReBypass)  
-![GitHub issues](https://img.shields.io/github/issues/sang765/ReBypass)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/sang765/ReBypass)
+![Version](https://img.shields.io/github/package-json/v/sang765/ReBypass?style=for-the-badge&logo=github&logoColor=d3869b&label=&color=1d2021&labelColor=282828)
+![GitHub stars](https://img.shields.io/github/stars/sang765/ReBypass?style=for-the-badge&logo=github)
+![GitHub forks](https://img.shields.io/github/forks/sang765/ReBypass?style=for-the-badge&logo=github)
+![GitHub issues](https://img.shields.io/github/issues/sang765/ReBypass?style=for-the-badge&logo=github)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/sang765/ReBypass?style=for-the-badge&logo=github)
+![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
+![npm](https://img.shields.io/badge/npm-%23000000.svg?style=for-the-badge&logo=npm&logoColor=white)
 
 </div>
 
@@ -18,6 +21,10 @@
 This is a remake of the official userscript for [bypass.vip](https://bypass.vip), a service that allows you to bypass ad-links and get directly to your destination without ads. The userscript automates the process by integrating with the bypass.vip API, providing a seamless experience on supported websites.
 
 **Note:** This is a fork/remake of the original [bypass.vip/userscript](https://github.com/bypass-vip/userscript).
+
+## Disclaimer
+
+Additional disclaimer applies if bypass failures are related to the bypass.vip API and are detected by anti-bypass website.
 
 ## Features
 
