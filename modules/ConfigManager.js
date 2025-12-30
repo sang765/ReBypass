@@ -85,13 +85,11 @@ class ConfigManager {
 
     static getConfig() {
         return {
-            timeMode: this.getValue('timeMode', 'advanced'),
+            advancedMode: this.getValue('advancedMode', true),
             globalTime: this.getValue('globalTime', 25),
             key: this.getValue('key', ''),
             safeMode: this.getValue('safeMode', true),
-            stealthMode: this.getValue('stealthMode', false),
-            randomTimeMin: this.getValue('randomTimeMin', 5),
-            randomTimeMax: this.getValue('randomTimeMax', 30)
+            stealthMode: this.getValue('stealthMode', false)
         };
     }
 
@@ -99,47 +97,11 @@ class ConfigManager {
         return this.getValue('waitTimes', this.DEFAULT_WAIT_TIMES);
     }
 
-    static getTimeModeConfig() {
-        return {
-            mode: this.getValue('timeMode', 'advanced'),
-            minTime: this.getValue('randomTimeMin', 5),
-            maxTime: this.getValue('randomTimeMax', 30)
-        };
-    }
-
-    static isRandomTimeValid() {
-        const config = this.getTimeModeConfig();
-        return config.mode === 'random' &&
-               typeof config.minTime === 'number' &&
-               typeof config.maxTime === 'number' &&
-               config.minTime > 0 &&
-               config.maxTime > config.minTime;
-    }
-
-    static getRandomWaitTime() {
-        const config = this.getTimeModeConfig();
-        if (!this.isRandomTimeValid()) {
-            return config.minTime || 5; // Fallback to default min time
-        }
-
-        const randomValue = Math.random() * (config.maxTime - config.minTime) + config.minTime;
-        return Math.floor(randomValue);
-    }
-
     static registerMenuCommands() {
-        this.registerMenuCommand('Set Time Mode to Classic', () => {
-            this.setValue('timeMode', 'classic');
-            alert('Time Mode set to Classic. Reload the page to apply.');
-        });
-
-        this.registerMenuCommand('Set Time Mode to Advanced', () => {
-            this.setValue('timeMode', 'advanced');
-            alert('Time Mode set to Advanced. Reload the page to apply.');
-        });
-
-        this.registerMenuCommand('Set Time Mode to Random', () => {
-            this.setValue('timeMode', 'random');
-            alert('Time Mode set to Random. Reload the page to apply.');
+        this.registerMenuCommand('Toggle Advanced Time Mode', () => {
+            const current = this.getValue('advancedMode', true);
+            this.setValue('advancedMode', !current);
+            alert(`Advanced Time Mode ${!current ? 'enabled' : 'disabled'}. Reload the page to apply.`);
         });
 
         this.registerMenuCommand('Toggle Stealth Mode', () => {
@@ -157,29 +119,6 @@ class ConfigManager {
                     alert(`Global wait time set to ${t} seconds. Reload the page to apply.`);
                 } else {
                     alert('Invalid time. Must be a positive number.');
-                }
-            }
-        });
-
-        this.registerMenuCommand('Configure Random Time', () => {
-            const current = this.getTimeModeConfig();
-            const minTime = prompt('Enter minimum wait time in seconds:', current.minTime);
-            if (minTime !== null) {
-                const min = parseInt(minTime);
-                if (!isNaN(min) && min > 0) {
-                    const maxTime = prompt('Enter maximum wait time in seconds:', current.maxTime);
-                    if (maxTime !== null) {
-                        const max = parseInt(maxTime);
-                        if (!isNaN(max) && max > min) {
-                            this.setValue('randomTimeMin', min);
-                            this.setValue('randomTimeMax', max);
-                            alert(`Random Time configured!\nMin: ${min}s, Max: ${max}s\nReload the page to apply.`);
-                        } else {
-                            alert('Invalid maximum time. Must be greater than minimum time.');
-                        }
-                    }
-                } else {
-                    alert('Invalid minimum time. Must be a positive number.');
                 }
             }
         });

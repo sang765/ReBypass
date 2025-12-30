@@ -10,10 +10,9 @@ const toastId = randomId();
 const containerId = randomId();
 const settingsBtnId = randomId();
 const settingsDropdownId = randomId();
-const timeModeSelectId = randomId();
+const advancedModeInputId = randomId();
 const stealthModeInputId = randomId();
 const timeInputId = randomId();
-const classicTimeInputId = randomId();
 const keyInputId = randomId();
 const timeUrlShortenerId = randomId();
 const timeSocialUnlockId = randomId();
@@ -25,10 +24,6 @@ const timePasteTextHostId = randomId();
 const timeCommunityDiscordId = randomId();
 const timeRandomObfuscatedId = randomId();
 const timeDefaultId = randomId();
-const randomTimeInputId = randomId();
-const randomTimeMinId = randomId();
-const randomTimeMaxId = randomId();
-const randomTimeWarningId = randomId();
 const saveSettingsId = randomId();
 const nextBtnId = randomId();
 const cancelBtnId = randomId();
@@ -66,7 +61,7 @@ class UIManager {
             box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-size: 13px; font-weight: 500;
             pointer-events: none; backdrop-filter: blur(4px);
         `;
-        const message = 'BYPASS.VIP: STARTING BYPASS...';
+        const message = Utils.hasWorkinkChallenge() ? 'Please complete captcha first!' : 'BYPASS.VIP: STARTING BYPASS...';
         toast.innerHTML = `
             <img src="${BYPASS_LOGO}" style="width:18px; height:18px; margin-right:10px;">
             <span>${message}</span>
@@ -142,38 +137,18 @@ class UIManager {
                     box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 2147483648;
                 ">
                     <label style="display: block; margin-bottom: 10px; color: var(--text-color);">
-                        Time Mode: <select id="${timeModeSelectId}" style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;">
-                            <option value="classic" title="Uses a single fixed wait time for all sites">Classic</option>
-                            <option value="advanced" title="Uses detailed wait times for each domain category">Advanced</option>
-                            <option value="random" title="Uses random wait times between min and max values">Random</option>
-                        </select>
+                        <input id="${advancedModeInputId}" type="checkbox"> Advanced Time Mode
                     </label>
                     <label style="display: block; margin-bottom: 10px; color: var(--text-color);">
                         <input id="${stealthModeInputId}" type="checkbox"> Stealth Mode (No UI)
                     </label>
-                    <div style="border-top: 1px solid #444; margin: 15px 0; padding-top: 15px;"></div>
-                    <div id="classicTimeConfig" style="display: none;">
-                        <label style="display: block; margin-bottom: 10px; color: var(--text-color);">
-                            Fixed Wait Time (seconds): <input id="${classicTimeInputId}" type="number" style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;" min="1">
-                        </label>
-                    </div>
-                    <div id="randomTimeConfig" style="display: none;">
-                        <div id="${randomTimeWarningId}" style="display: none; color: var(--error-color); font-size: 0.8em; margin-bottom: 10px; padding: 5px; background: rgba(255,77,77,0.1); border-radius: 4px;"></div>
-                        <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.9em;">
-                            Min Time (seconds): <input id="${randomTimeMinId}" type="number" style="width: 60px; padding: 3px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;" min="1">
-                        </label>
-                        <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.9em;">
-                            Max Time (seconds): <input id="${randomTimeMaxId}" type="number" style="width: 60px; padding: 3px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;" min="1">
-                        </label>
-                    </div>
-                    <div style="border-top: 1px solid #444; margin: 15px 0; padding-top: 15px;"></div>
                     <label style="display: block; margin-bottom: 10px; color: var(--text-color);">
                         Global Time (seconds): <input id="${timeInputId}" type="number" style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;">
                     </label>
                     <label style="display: block; margin-bottom: 10px; color: var(--text-color);">
                         API Key: <input id="${keyInputId}" type="text" style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;">
                     </label>
-                    <h4 id="advancedTimeSection" style="margin: 10px 0 5px 0; color: var(--text-color); font-size: 0.9em;">Advanced Wait Times (seconds):</h4>
+                    <h4 style="margin: 10px 0 5px 0; color: var(--text-color); font-size: 0.9em;">Advanced Wait Times (seconds):</h4>
                     <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">url_shortener: <input id="${timeUrlShortenerId}" type="number" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
                     <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">social_unlock: <input id="${timeSocialUnlockId}" type="number" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
                     <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">redirect_hub: <input id="${timeRedirectHubId}" type="number" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
@@ -260,77 +235,11 @@ class UIManager {
                         font-size: 1em;
                     }
                     #${settingsDropdownId} { width: 200px; padding: 10px; }
-                    #${timeInputId}, #${keyInputId}, #${classicTimeInputId} { font-size: 0.9em; }
-                    #${randomTimeMinId}, #${randomTimeMaxId} { font-size: 0.8em; width: 50px; }
-                    #${timeModeSelectId} { font-size: 0.9em; }
+                    #${timeInputId}, #${keyInputId} { font-size: 0.9em; }
                 }
             </style>
         `;
         return container;
-    }
-
-    static validateRandomTime(minTime, maxTime) {
-        const warnings = [];
-        
-        if (minTime <= 0) {
-            warnings.push('Min Time must be greater than 0');
-        }
-        
-        if (maxTime <= 0) {
-            warnings.push('Max Time must be greater than 0');
-        }
-        
-        if (minTime >= maxTime) {
-            warnings.push('Max Time must be greater than Min Time');
-        }
-        
-        return warnings;
-    }
-
-    static updateTimeModeUI(mode) {
-        const classicConfig = document.getElementById('classicTimeConfig');
-        const randomConfig = document.getElementById('randomTimeConfig');
-        const advancedSection = document.getElementById('advancedTimeSection');
-        const globalTimeLabel = document.querySelector(`label[for="${timeInputId}"]`);
-
-        // Hide all configs first
-        if (classicConfig) classicConfig.style.display = 'none';
-        if (randomConfig) randomConfig.style.display = 'none';
-        if (advancedSection) {
-            advancedSection.style.display = 'none';
-            // Hide all advanced inputs
-            const advancedLabels = advancedSection.parentElement.querySelectorAll('label');
-            advancedLabels.forEach(label => {
-                if (label !== globalTimeLabel) {
-                    label.style.display = 'none';
-                }
-            });
-        }
-
-        // Show relevant config based on mode
-        if (mode === 'classic') {
-            if (classicConfig) classicConfig.style.display = 'block';
-        } else if (mode === 'random') {
-            if (randomConfig) randomConfig.style.display = 'block';
-        } else if (mode === 'advanced') {
-            if (advancedSection) {
-                advancedSection.style.display = 'block';
-                // Show all advanced inputs
-                const advancedLabels = advancedSection.parentElement.querySelectorAll('label');
-                advancedLabels.forEach(label => {
-                    if (label !== globalTimeLabel) {
-                        label.style.display = 'block';
-                    }
-                });
-            }
-        }
-
-        // Disable global time input when in classic mode (use classic input instead)
-        if (globalTimeLabel) {
-            const input = document.getElementById(timeInputId);
-            if (input) input.disabled = (mode === 'classic');
-            globalTimeLabel.style.opacity = (mode === 'classic') ? '0.5' : '1';
-        }
     }
 }
 
