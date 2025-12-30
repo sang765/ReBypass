@@ -128,6 +128,24 @@ class MainController {
                 settingsDropdown.style.display = settingsDropdown.style.display === 'none' ? 'block' : 'none';
             });
 
+            // Initialize settings with current config values
+            const advancedModeInput = document.getElementById(advancedModeInputId);
+            const stealthModeInput = document.getElementById(stealthModeInputId);
+            const timeInput = document.getElementById(timeInputId);
+            const keyInput = document.getElementById(keyInputId);
+
+            // Set initial values from config
+            advancedModeInput.checked = cfg.advancedMode;
+            stealthModeInput.checked = cfg.stealthMode;
+            timeInput.value = cfg.globalTime;
+            keyInput.value = cfg.key;
+
+            // Set initial values for advanced time inputs
+            for (const cat of Object.keys(wt)) {
+                const input = document.getElementById(timeIdMap[cat]);
+                input.value = wt[cat];
+            }
+
             const saveSettings = container.querySelector(`#${saveSettingsId}`);
             saveSettings.addEventListener('click', () => {
                 const advancedMode = document.getElementById(advancedModeInputId).checked;
