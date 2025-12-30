@@ -28,6 +28,8 @@ jobs:
       uses: actions/github-script@v7
       with:
         script: |
+          const fs = require('fs');
+
           // Get version
           const version = context.payload.release.tag_name;
 
@@ -36,9 +38,9 @@ jobs:
 
           const body = `Release ReBypass artifact, generated on ${date}`;
 
-          core.setOutput('version', version);
-          core.setOutput('body', body);
-          core.setOutput('title', `Version: ${version}`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `version=${version}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `body=${body}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `title=Version: ${version}\n`);
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
