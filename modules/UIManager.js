@@ -10,6 +10,7 @@ const toastId = randomId();
 const containerId = randomId();
 const settingsBtnId = randomId();
 const settingsDropdownId = randomId();
+const themeToggleBtnId = randomId();
 const advancedModeInputId = randomId();
 const stealthModeInputId = randomId();
 const timeInputId = randomId();
@@ -97,11 +98,16 @@ class UIManager {
         const existingToast = document.querySelector('.bypass-toast');
         if (existingToast) existingToast.remove();
 
+        // Detect and set initial theme
+        const currentTheme = this.detectTheme();
+        this.setTheme(currentTheme);
+
         const container = document.createElement('div');
         container.id = containerId;
+        container.className = `bypass-${currentTheme}`;
         container.style.cssText = `
             --primary-color: #1E88E5;
-            --bg-color: rgba(18, 18, 18, 0.5);
+            --bg-color: #121212;
             --text-color: #e0e0e0;
             --error-color: #ff4d4d;
             --success-color: #2ecc71;
@@ -209,6 +215,7 @@ class UIManager {
                 }
                 #${cancelBtnId}:hover { background-color: #999; transform: translateY(-3px); }
                 #${cancelBtnId}:active { transform: translateY(0); }
+                #${themeToggleBtnId}:hover { background: var(--primary-color); color: white; }
                 #${settingsBtnId}:hover { background: var(--primary-color); color: white; }
                 @media (max-width: 768px) {
                     #${containerId} {

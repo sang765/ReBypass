@@ -220,23 +220,20 @@ class MainController {
                 performRedirect();
             }, { passive: false });
 
-            container.addEventListener('click', (e) => {
-                // Allow clicks on interactive elements
-                const interactiveIds = [nextBtnId, cancelBtnId, settingsBtnId, saveSettingsId];
+            // Prevent all pointer events from passing through to the underlying page
+            const preventEventPropagation = (e) => {
+                const interactiveIds = [nextBtnId, cancelBtnId, settingsBtnId, themeToggleBtnId, saveSettingsId];
                 if (e.target && interactiveIds.includes(e.target.id)) return;
-                // Prevent clicks from passing through to the underlying page
                 e.preventDefault();
                 e.stopPropagation();
-            });
+            };
 
-            container.addEventListener('touchstart', (e) => {
-                // Allow touches on interactive elements
-                const interactiveIds = [nextBtnId, cancelBtnId, settingsBtnId, saveSettingsId];
-                if (e.target && interactiveIds.includes(e.target.id)) return;
-                // Prevent touches from passing through to the underlying page
-                e.preventDefault();
-                e.stopPropagation();
-            }, { passive: false });
+            // Use capture phase to intercept events before they reach targets
+            const eventTypes = ['click', 'mousedown', 'mouseup', 'touchstart', 'touchmove', 'touchend', 'contextmenu'];
+            eventTypes.forEach(eventType => {
+                const isTouch = eventType.startsWith('touch');
+                container.addEventListener(eventType, preventEventPropagation, { capture: true, passive: !isTouch });
+            });
 
             try {
                 newBtn.setAttribute('aria-label', 'Proceed to link');
