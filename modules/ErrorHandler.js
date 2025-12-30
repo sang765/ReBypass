@@ -12,7 +12,6 @@ class ErrorHandler {
     }
 }
 
-// Export
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = ErrorHandler;
 }
