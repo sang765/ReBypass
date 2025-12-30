@@ -1,7 +1,7 @@
 {
   "name": "REBYPASS",
   "namespace": "bypass.vip",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "author": "sang765",
   "description": "Yes, another bypass userscript. This is a fork of bypass-vip/userscript",
   "grants": [
@@ -17,7 +17,13 @@
     "*://r.work.ink/token/*",
     "*://workink.net/token/*",
     "*://workink.one/token/*",
-    "*://workink.me/token/*"
+    "*://workink.me/token/*",
+    "*://work.ink/landing",
+    "*://www.work.ink/landing",
+    "*://r.work.ink/landing",
+    "*://workink.net/landing",
+    "*://workink.one/landing",
+    "*://workink.me/landing"
   ],
   "matches": [],
   "custom_matches": [

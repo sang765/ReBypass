@@ -1,28 +1,5 @@
-let classifications = {};
 let cfg;
 let wt;
-
-async function loadClassifications() {
-    try {
-        const response = await fetch('https://raw.githubusercontent.com/sang765/ReBypass/refs/heads/main/domains-classification.json');
-        if (response.ok) {
-            classifications = await response.json();
-        } else {
-            throw new Error('Failed to fetch classifications');
-        }
-    } catch (e) {
-        console.warn('Failed to load domain classifications, using default times:', e);
-    }
-}
-
-function getDomainCategory(domain) {
-    for (const [cat, domains] of Object.entries(classifications)) {
-        if (domains.includes(domain)) {
-            return cat;
-        }
-    }
-    return 'default';
-}
 
 function showError(message) {
     if (document.body) {
@@ -40,6 +17,26 @@ function showStartingNotification() {
     UIManager.showBypassToast();
 }
 
+function showCaptchaToast() {
+    if (document.querySelector('.bypass-toast')) return;
+    const toast = document.createElement('div');
+    toast.id = 'captcha-toast';
+    toast.className = 'bypass-toast';
+    toast.style.cssText = `
+        position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
+        background: rgba(18, 18, 18, 0.6); color: white; padding: 8px 16px;
+        border-radius: 30px; border: 1px solid #1E88E5; z-index: 2147483647;
+        display: flex; align-items: center; font-family: 'Segoe UI', sans-serif;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-size: 13px; font-weight: 500;
+        pointer-events: none; backdrop-filter: blur(4px);
+    `;
+    toast.innerHTML = `
+        <img src="${GM_info.script.icon}" style="width:18px; height:18px; margin-right:10px;">
+        <span>Please complete captcha first!</span>
+    `;
+    (document.body || document.documentElement).appendChild(toast);
+}
+
 function isValidUrl(url) {
     try {
         new URL(url);
@@ -51,54 +48,13 @@ function isValidUrl(url) {
 
 class MainController {
     static async init() {
-        await loadClassifications();
+        await ConfigManager.loadClassifications();
 
         // Menu commands for settings
-        GM_registerMenuCommand('Toggle Advanced Time Mode', () => {
-            const current = GM_getValue('advancedMode', true);
-            GM_setValue('advancedMode', !current);
-            alert(`Advanced Time Mode ${!current ? 'enabled' : 'disabled'}. Reload the page to apply.`);
-        });
+        ConfigManager.registerMenuCommands();
 
-        GM_registerMenuCommand('Toggle Stealth Mode', () => {
-            const current = GM_getValue('stealthMode', false);
-            GM_setValue('stealthMode', !current);
-            alert(`Stealth Mode ${!current ? 'enabled' : 'disabled'}. Reload the page to apply.`);
-        });
-
-        GM_registerMenuCommand('Set Global Wait Time', () => {
-            const time = prompt('Enter global wait time in seconds:', GM_getValue('globalTime', 25));
-            if (time !== null) {
-                const t = parseInt(time);
-                if (!isNaN(t) && t > 0) {
-                    GM_setValue('globalTime', t);
-                    alert(`Global wait time set to ${t} seconds. Reload the page to apply.`);
-                } else {
-                    alert('Invalid time. Must be a positive number.');
-                }
-            }
-        });
-
-        cfg = {
-            advancedMode: GM_getValue('advancedMode', true),
-            globalTime: GM_getValue('globalTime', 25),
-            key: GM_getValue('key', ''),
-            safeMode: GM_getValue('safeMode', true),
-            stealthMode: GM_getValue('stealthMode', false)
-        };
-
-        wt = GM_getValue('waitTimes', {
-            url_shortener: 20,
-            social_unlock: 5,
-            redirect_hub: 0,
-            lootlabs_ecosystem: 20,
-            mega_hub: 18,
-            leak_nsfw_hub: 25,
-            paste_text_host: 8,
-            community_discord: 10,
-            random_obfuscated: 15,
-            default: 25
-        });
+        cfg = ConfigManager.getConfig();
+        wt = ConfigManager.getWaitTimes();
 
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.runScript(), { once: true });
@@ -111,10 +67,26 @@ class MainController {
         const urlParams = new URLSearchParams(window.location.search);
 
         const currentDomain = window.location.hostname;
-        const category = getDomainCategory(currentDomain);
-        let waitTime = cfg.advancedMode ? (wt[category] || wt.default) : cfg.globalTime;
-        // Add randomization to avoid detection
-        waitTime += Math.floor(Math.random() * 6) - 3; // Randomize -3 to +2 seconds
+        const category = ConfigManager.getDomainCategory(currentDomain);
+        
+        let waitTime;
+        const timeModeConfig = ConfigManager.getTimeModeConfig();
+
+        if (timeModeConfig.mode === 'random' && ConfigManager.isRandomTimeValid()) {
+            // Use random time mode
+            waitTime = ConfigManager.getRandomWaitTime();
+        } else if (timeModeConfig.mode === 'classic') {
+            // Use classic fixed time mode
+            waitTime = cfg.globalTime;
+        } else { // advanced
+            // Use advanced time mode
+            waitTime = wt[category] || wt.default;
+        }
+
+        // Add randomization to avoid detection (only for non-random time mode)
+        if (timeModeConfig.mode !== 'random' || !ConfigManager.isRandomTimeValid()) {
+            waitTime += Math.floor(Math.random() * 6) - 3; // Randomize -3 to +2 seconds
+        }
         waitTime = Math.max(1, waitTime); // Ensure at least 1 second
 
         if (Utils.isBypassSite()) {
@@ -157,7 +129,17 @@ class MainController {
             return;
         }
 
-        showStartingNotification();
+        const isWorkink = ['work.ink', 'workink.net', 'workink.me', 'workink.one'].includes(window.location.hostname);
+        const hasCaptcha = Utils.hasCaptcha();
+
+        if (isWorkink && hasCaptcha) {
+            showCaptchaToast();
+            return;
+        }
+
+        // Hide existing toast
+        const existingToast = document.querySelector('.bypass-toast');
+        if (existingToast) existingToast.remove();
 
         if (!Utils.hasWorkinkChallenge()) {
             const container = UIManager.createContainer();
@@ -188,25 +170,98 @@ class MainController {
                 settingsDropdown.style.display = settingsDropdown.style.display === 'none' ? 'block' : 'none';
             });
 
+            // Populate form with current configuration
+            const currentConfig = ConfigManager.getConfig();
+            const currentTimeModeConfig = ConfigManager.getTimeModeConfig();
+
+            document.getElementById(timeModeSelectId).value = currentConfig.timeMode;
+            document.getElementById(stealthModeInputId).checked = currentConfig.stealthMode;
+            document.getElementById(timeInputId).value = currentConfig.globalTime;
+            document.getElementById(classicTimeInputId).value = currentConfig.globalTime; // Use globalTime for classic
+            document.getElementById(keyInputId).value = currentConfig.key;
+
+            // Populate random time settings
+            document.getElementById(randomTimeMinId).value = currentTimeModeConfig.minTime;
+            document.getElementById(randomTimeMaxId).value = currentTimeModeConfig.maxTime;
+
+            // Update UI based on time mode
+            UIManager.updateTimeModeUI(currentConfig.timeMode);
+            
+            // Populate advanced time settings
+            for (const cat of Object.keys(wt)) {
+                const input = document.getElementById(timeIdMap[cat]);
+                if (input) {
+                    input.value = wt[cat];
+                }
+            }
+
             const saveSettings = container.querySelector(`#${saveSettingsId}`);
             saveSettings.addEventListener('click', () => {
-                const advancedMode = document.getElementById(advancedModeInputId).checked;
+                const timeMode = document.getElementById(timeModeSelectId).value;
                 const stealthMode = document.getElementById(stealthModeInputId).checked;
                 const globalTime = parseInt(document.getElementById(timeInputId).value);
+                const classicTime = parseInt(document.getElementById(classicTimeInputId).value);
                 const key = document.getElementById(keyInputId).value;
+
+                // Random time configuration
+                const randomTimeMin = parseInt(document.getElementById(randomTimeMinId).value);
+                const randomTimeMax = parseInt(document.getElementById(randomTimeMaxId).value);
+
+                // Validate random time settings if in random mode
+                const warnings = UIManager.validateRandomTime(randomTimeMin, randomTimeMax);
+                const warningEl = document.getElementById(randomTimeWarningId);
+
+                if (timeMode === 'random' && warnings.length > 0) {
+                    warningEl.style.display = 'block';
+                    warningEl.innerHTML = warnings.map(w => `• ${w}`).join('<br>');
+                    return;
+                } else {
+                    warningEl.style.display = 'none';
+                }
+
                 const waitTimesNew = {};
                 for (const cat of Object.keys(wt)) {
                     const val = parseInt(document.getElementById(timeIdMap[cat]).value);
                     waitTimesNew[cat] = isNaN(val) ? wt[cat] : val;
                 }
-                GM_setValue('advancedMode', advancedMode);
-                GM_setValue('stealthMode', stealthMode);
-                GM_setValue('globalTime', globalTime);
-                GM_setValue('key', key);
-                GM_setValue('waitTimes', waitTimesNew);
+
+                ConfigManager.setValue('timeMode', timeMode);
+                ConfigManager.setValue('stealthMode', stealthMode);
+                ConfigManager.setValue('randomTimeMin', randomTimeMin || 5);
+                ConfigManager.setValue('randomTimeMax', randomTimeMax || 30);
+                ConfigManager.setValue('globalTime', timeMode === 'classic' ? (classicTime || globalTime) : globalTime);
+                ConfigManager.setValue('key', key);
+                ConfigManager.setValue('waitTimes', waitTimesNew);
                 settingsDropdown.style.display = 'none';
                 alert('Settings saved. Reload the page to apply changes.');
             });
+
+            // Time Mode event handler
+            const timeModeSelect = container.querySelector(`#${timeModeSelectId}`);
+            timeModeSelect.addEventListener('change', (e) => {
+                UIManager.updateTimeModeUI(e.target.value);
+            });
+
+            // Random Time event handlers
+            const randomTimeMinInput = container.querySelector(`#${randomTimeMinId}`);
+            const randomTimeMaxInput = container.querySelector(`#${randomTimeMaxId}`);
+            const warningEl = container.querySelector(`#${randomTimeWarningId}`);
+
+            function validateAndShowWarnings() {
+                const minTime = parseInt(randomTimeMinInput.value) || 0;
+                const maxTime = parseInt(randomTimeMaxInput.value) || 0;
+                const warnings = UIManager.validateRandomTime(minTime, maxTime);
+
+                if (timeModeSelect.value === 'random' && warnings.length > 0) {
+                    warningEl.style.display = 'block';
+                    warningEl.innerHTML = warnings.map(w => `• ${w}`).join('<br>');
+                } else {
+                    warningEl.style.display = 'none';
+                }
+            }
+
+            randomTimeMinInput.addEventListener('input', validateAndShowWarnings);
+            randomTimeMaxInput.addEventListener('input', validateAndShowWarnings);
 
             // Cancel button
             const cancelBtn = container.querySelector(`#${cancelBtnId}`);
@@ -285,8 +340,22 @@ class MainController {
             }, { passive: false });
 
             container.addEventListener('click', (e) => {
-                if (e.target && e.target.id === 'nextBtn') return;
+                // Allow clicks on interactive elements
+                const interactiveIds = [nextBtnId, cancelBtnId, settingsBtnId, saveSettingsId];
+                if (e.target && interactiveIds.includes(e.target.id)) return;
+                // Prevent clicks from passing through to the underlying page
+                e.preventDefault();
+                e.stopPropagation();
             });
+
+            container.addEventListener('touchstart', (e) => {
+                // Allow touches on interactive elements
+                const interactiveIds = [nextBtnId, cancelBtnId, settingsBtnId, saveSettingsId];
+                if (e.target && interactiveIds.includes(e.target.id)) return;
+                // Prevent touches from passing through to the underlying page
+                e.preventDefault();
+                e.stopPropagation();
+            }, { passive: false });
 
             try {
                 newBtn.setAttribute('aria-label', 'Proceed to link');
