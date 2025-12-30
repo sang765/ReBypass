@@ -248,6 +248,18 @@ class UIManager {
         `;
         return container;
     }
+
+    static detectTheme() {
+        // Check for dark mode preference
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        return prefersDark ? 'dark' : 'light';
+    }
+
+    static setTheme(theme) {
+        // Apply theme-specific styles if needed
+        // The container already uses CSS variables for theming
+        // This method can be extended for more complex theme switching
+    }
 }
 
 if (typeof module !== 'undefined' && module.exports) {
