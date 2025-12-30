@@ -68,9 +68,22 @@ class MainController {
 
         const currentDomain = window.location.hostname;
         const category = ConfigManager.getDomainCategory(currentDomain);
-        let waitTime = cfg.advancedMode ? (wt[category] || wt.default) : cfg.globalTime;
-        // Add randomization to avoid detection
-        waitTime += Math.floor(Math.random() * 6) - 3; // Randomize -3 to +2 seconds
+        
+        let waitTime;
+        const randomTimeConfig = ConfigManager.getRandomTimeConfig();
+        
+        if (randomTimeConfig.enabled && ConfigManager.isRandomTimeValid()) {
+            // Use random time mode
+            waitTime = ConfigManager.getRandomWaitTime();
+        } else {
+            // Use traditional time mode
+            waitTime = cfg.advancedMode ? (wt[category] || wt.default) : cfg.globalTime;
+        }
+        
+        // Add randomization to avoid detection (only for non-random time mode)
+        if (!randomTimeConfig.enabled || !ConfigManager.isRandomTimeValid()) {
+            waitTime += Math.floor(Math.random() * 6) - 3; // Randomize -3 to +2 seconds
+        }
         waitTime = Math.max(1, waitTime); // Ensure at least 1 second
 
         if (Utils.isBypassSite()) {
@@ -154,25 +167,103 @@ class MainController {
                 settingsDropdown.style.display = settingsDropdown.style.display === 'none' ? 'block' : 'none';
             });
 
+            // Populate form with current configuration
+            const currentConfig = ConfigManager.getConfig();
+            const currentRandomConfig = ConfigManager.getRandomTimeConfig();
+            
+            document.getElementById(advancedModeInputId).checked = currentConfig.advancedMode;
+            document.getElementById(stealthModeInputId).checked = currentConfig.stealthMode;
+            document.getElementById(timeInputId).value = currentConfig.globalTime;
+            document.getElementById(keyInputId).value = currentConfig.key;
+            
+            // Populate random time settings
+            document.getElementById(randomTimeInputId).checked = currentRandomConfig.enabled;
+            document.getElementById(randomTimeMinId).value = currentRandomConfig.minTime;
+            document.getElementById(randomTimeMaxId).value = currentRandomConfig.maxTime;
+            
+            // Update UI based on random time state
+            UIManager.updateRandomTimeUI(currentRandomConfig.enabled);
+            
+            // Populate advanced time settings
+            for (const cat of Object.keys(wt)) {
+                const input = document.getElementById(timeIdMap[cat]);
+                if (input) {
+                    input.value = wt[cat];
+                }
+            }
+
             const saveSettings = container.querySelector(`#${saveSettingsId}`);
             saveSettings.addEventListener('click', () => {
                 const advancedMode = document.getElementById(advancedModeInputId).checked;
                 const stealthMode = document.getElementById(stealthModeInputId).checked;
+                const randomTimeEnabled = document.getElementById(randomTimeInputId).checked;
                 const globalTime = parseInt(document.getElementById(timeInputId).value);
                 const key = document.getElementById(keyInputId).value;
+                
+                // Random time configuration
+                const randomTimeMin = parseInt(document.getElementById(randomTimeMinId).value);
+                const randomTimeMax = parseInt(document.getElementById(randomTimeMaxId).value);
+                
+                // Validate random time settings
+                const warnings = UIManager.validateRandomTime(randomTimeMin, randomTimeMax);
+                const warningEl = document.getElementById(randomTimeWarningId);
+                
+                if (randomTimeEnabled && warnings.length > 0) {
+                    warningEl.style.display = 'block';
+                    warningEl.innerHTML = warnings.map(w => `• ${w}`).join('<br>');
+                    return;
+                } else {
+                    warningEl.style.display = 'none';
+                }
+                
                 const waitTimesNew = {};
                 for (const cat of Object.keys(wt)) {
                     const val = parseInt(document.getElementById(timeIdMap[cat]).value);
                     waitTimesNew[cat] = isNaN(val) ? wt[cat] : val;
                 }
+                
                 ConfigManager.setValue('advancedMode', advancedMode);
                 ConfigManager.setValue('stealthMode', stealthMode);
+                ConfigManager.setValue('randomTime', randomTimeEnabled);
+                ConfigManager.setValue('randomTimeMin', randomTimeMin || 5);
+                ConfigManager.setValue('randomTimeMax', randomTimeMax || 30);
                 ConfigManager.setValue('globalTime', globalTime);
                 ConfigManager.setValue('key', key);
                 ConfigManager.setValue('waitTimes', waitTimesNew);
                 settingsDropdown.style.display = 'none';
                 alert('Settings saved. Reload the page to apply changes.');
             });
+
+            // Random Time event handlers
+            const randomTimeCheckbox = container.querySelector(`#${randomTimeInputId}`);
+            const randomTimeMinInput = container.querySelector(`#${randomTimeMinId}`);
+            const randomTimeMaxInput = container.querySelector(`#${randomTimeMaxId}`);
+            const warningEl = container.querySelector(`#${randomTimeWarningId}`);
+
+            randomTimeCheckbox.addEventListener('change', (e) => {
+                UIManager.updateRandomTimeUI(e.target.checked);
+                
+                // Clear warnings when disabling
+                if (!e.target.checked) {
+                    warningEl.style.display = 'none';
+                }
+            });
+
+            function validateAndShowWarnings() {
+                const minTime = parseInt(randomTimeMinInput.value) || 0;
+                const maxTime = parseInt(randomTimeMaxInput.value) || 0;
+                const warnings = UIManager.validateRandomTime(minTime, maxTime);
+                
+                if (randomTimeCheckbox.checked && warnings.length > 0) {
+                    warningEl.style.display = 'block';
+                    warningEl.innerHTML = warnings.map(w => `• ${w}`).join('<br>');
+                } else {
+                    warningEl.style.display = 'none';
+                }
+            }
+
+            randomTimeMinInput.addEventListener('input', validateAndShowWarnings);
+            randomTimeMaxInput.addEventListener('input', validateAndShowWarnings);
 
             // Cancel button
             const cancelBtn = container.querySelector(`#${cancelBtnId}`);

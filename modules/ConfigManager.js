@@ -89,12 +89,42 @@ class ConfigManager {
             globalTime: this.getValue('globalTime', 25),
             key: this.getValue('key', ''),
             safeMode: this.getValue('safeMode', true),
-            stealthMode: this.getValue('stealthMode', false)
+            stealthMode: this.getValue('stealthMode', false),
+            randomTime: this.getValue('randomTime', false),
+            randomTimeMin: this.getValue('randomTimeMin', 5),
+            randomTimeMax: this.getValue('randomTimeMax', 30)
         };
     }
 
     static getWaitTimes() {
         return this.getValue('waitTimes', this.DEFAULT_WAIT_TIMES);
+    }
+
+    static getRandomTimeConfig() {
+        return {
+            enabled: this.getValue('randomTime', false),
+            minTime: this.getValue('randomTimeMin', 5),
+            maxTime: this.getValue('randomTimeMax', 30)
+        };
+    }
+
+    static isRandomTimeValid() {
+        const config = this.getRandomTimeConfig();
+        return config.enabled && 
+               typeof config.minTime === 'number' && 
+               typeof config.maxTime === 'number' && 
+               config.minTime > 0 && 
+               config.maxTime > config.minTime;
+    }
+
+    static getRandomWaitTime() {
+        const config = this.getRandomTimeConfig();
+        if (!this.isRandomTimeValid()) {
+            return config.minTime || 5; // Fallback to default min time
+        }
+        
+        const randomValue = Math.random() * (config.maxTime - config.minTime) + config.minTime;
+        return Math.floor(randomValue);
     }
 
     static registerMenuCommands() {
@@ -120,6 +150,37 @@ class ConfigManager {
                 } else {
                     alert('Invalid time. Must be a positive number.');
                 }
+            }
+        });
+
+        this.registerMenuCommand('Configure Random Time', () => {
+            const current = this.getRandomTimeConfig();
+            const enabled = confirm(`Random Time is currently ${current.enabled ? 'enabled' : 'disabled'}.\n\nClick OK to enable Random Time or Cancel to disable it.`);
+            
+            if (enabled) {
+                const minTime = prompt('Enter minimum wait time in seconds:', current.minTime);
+                if (minTime !== null) {
+                    const min = parseInt(minTime);
+                    if (!isNaN(min) && min > 0) {
+                        const maxTime = prompt('Enter maximum wait time in seconds:', current.maxTime);
+                        if (maxTime !== null) {
+                            const max = parseInt(maxTime);
+                            if (!isNaN(max) && max > min) {
+                                this.setValue('randomTime', true);
+                                this.setValue('randomTimeMin', min);
+                                this.setValue('randomTimeMax', max);
+                                alert(`Random Time enabled!\nMin: ${min}s, Max: ${max}s\nReload the page to apply.`);
+                            } else {
+                                alert('Invalid maximum time. Must be greater than minimum time.');
+                            }
+                        }
+                    } else {
+                        alert('Invalid minimum time. Must be a positive number.');
+                    }
+                }
+            } else {
+                this.setValue('randomTime', false);
+                alert('Random Time disabled. Reload the page to apply.');
             }
         });
     }
