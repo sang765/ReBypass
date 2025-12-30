@@ -17,7 +17,13 @@
     "*://r.work.ink/token/*",
     "*://workink.net/token/*",
     "*://workink.one/token/*",
-    "*://workink.me/token/*"
+    "*://workink.me/token/*",
+    "*://work.ink/landing",
+    "*://www.work.ink/landing",
+    "*://r.work.ink/landing",
+    "*://workink.net/landing",
+    "*://workink.one/landing",
+    "*://workink.me/landing"
   ],
   "matches": [],
   "custom_matches": [
