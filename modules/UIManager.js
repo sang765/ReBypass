@@ -107,7 +107,7 @@ class UIManager {
         container.className = `bypass-${currentTheme}`;
         container.style.cssText = `
             --primary-color: #1E88E5;
-            --bg-color: #121212;
+            --bg-color: rgba(18, 18, 18, 0.9);
             --text-color: #e0e0e0;
             --error-color: #ff4d4d;
             --success-color: #2ecc71;
@@ -129,6 +129,7 @@ class UIManager {
             overflow: auto;
             box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
             pointer-events: auto;
+            backdrop-filter: blur(8px);
         `;
         container.innerHTML = `
             <div style="position: absolute; top: 20px; right: 20px;">
