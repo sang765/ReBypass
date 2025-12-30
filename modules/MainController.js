@@ -17,6 +17,26 @@ function showStartingNotification() {
     UIManager.showBypassToast();
 }
 
+function showCaptchaToast() {
+    if (document.querySelector('.bypass-toast')) return;
+    const toast = document.createElement('div');
+    toast.id = 'captcha-toast';
+    toast.className = 'bypass-toast';
+    toast.style.cssText = `
+        position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
+        background: rgba(18, 18, 18, 0.6); color: white; padding: 8px 16px;
+        border-radius: 30px; border: 1px solid #1E88E5; z-index: 2147483647;
+        display: flex; align-items: center; font-family: 'Segoe UI', sans-serif;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-size: 13px; font-weight: 500;
+        pointer-events: none; backdrop-filter: blur(4px);
+    `;
+    toast.innerHTML = `
+        <img src="${GM_info.script.icon}" style="width:18px; height:18px; margin-right:10px;">
+        <span>Please complete captcha first!</span>
+    `;
+    (document.body || document.documentElement).appendChild(toast);
+}
+
 function isValidUrl(url) {
     try {
         new URL(url);
@@ -93,7 +113,17 @@ class MainController {
             return;
         }
 
-        showStartingNotification();
+        const isWorkink = ['work.ink', 'workink.net', 'workink.me', 'workink.one'].includes(window.location.hostname);
+        const hasCaptcha = Utils.hasCaptcha();
+
+        if (isWorkink && hasCaptcha) {
+            showCaptchaToast();
+            return;
+        }
+
+        // Hide existing toast
+        const existingToast = document.querySelector('.bypass-toast');
+        if (existingToast) existingToast.remove();
 
         if (!Utils.hasWorkinkChallenge()) {
             const container = UIManager.createContainer();
