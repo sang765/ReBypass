@@ -162,8 +162,16 @@ class MainController {
                 ConfigManager.setValue('globalTime', globalTime);
                 ConfigManager.setValue('key', key);
                 ConfigManager.setValue('waitTimes', waitTimesNew);
+                
+                // Update local config variables to reflect changes immediately
+                cfg.advancedMode = advancedMode;
+                cfg.stealthMode = stealthMode;
+                cfg.globalTime = globalTime;
+                cfg.key = key;
+                wt = waitTimesNew;
+                
                 settingsDropdown.style.display = 'none';
-                alert('Settings saved. Reload the page to apply changes.');
+                alert('Settings saved. Changes applied immediately.');
             });
 
             // Cancel button
