@@ -27,7 +27,31 @@ function extractMatches(content) {
     return matches;
 }
 
+function extractDomains(matches) {
+    const domains = [];
+    for (const match of matches) {
+        const domainMatch = match.match(/:\/\/([^\/]+)/);
+        if (domainMatch) {
+            domains.push(domainMatch[1]);
+        }
+    }
+    return domains;
+}
+
 async function main() {
+    const args = process.argv.slice(2);
+    const hasSync = args.includes('--sync');
+    const hasPrint = args.includes('--print');
+    const hasExport = args.includes('--export');
+
+    if (!hasSync && !hasPrint && !hasExport) {
+        console.log('Usage: node sync-matches.js [--sync] [--print] [--export]');
+        console.log('--sync: Update metadata.json with match patterns');
+        console.log('--print: Print match patterns to terminal');
+        console.log('--export: Export domains without * to terminal');
+        process.exit(1);
+    }
+
     try {
         console.log('Fetching latest bypass-vip.user.js...');
         const content = await fetchUserscript();
@@ -37,16 +61,29 @@ async function main() {
 
         console.log(`Found ${matches.length} match patterns.`);
 
-        // Read current JSON
-        const jsonPath = JSON_FILE;
-        const jsonData = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+        if (hasPrint) {
+            console.log('Match patterns:');
+            matches.forEach(match => console.log(match));
+        }
 
-        // Update matches
-        jsonData.matches = matches;
+        if (hasExport) {
+            const domains = extractDomains(matches);
+            console.log('Domains:');
+            domains.forEach(domain => console.log(domain));
+        }
 
-        // Write back
-        fs.writeFileSync(jsonPath, JSON.stringify(jsonData, null, 2));
-        console.log('Updated metadata.json with new match patterns.');
+        if (hasSync) {
+            // Read current JSON
+            const jsonPath = JSON_FILE;
+            const jsonData = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+
+            // Update matches
+            jsonData.matches = matches;
+
+            // Write back
+            fs.writeFileSync(jsonPath, JSON.stringify(jsonData, null, 2));
+            console.log('Updated metadata.json with new match patterns.');
+        }
     } catch (error) {
         console.error('Error:', error.message);
         process.exit(1);

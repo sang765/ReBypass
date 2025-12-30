@@ -1,18 +1,15 @@
 const fs = require('fs');
 const path = require('path');
 
+// Read package.json for version
+const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+
 // Read metadata from scripts/metadata.json
 const info = JSON.parse(fs.readFileSync('scripts/metadata.json', 'utf8'));
-
-// Sync version to package.json
-const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-packageJson.version = info.version;
-fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
-console.log('Synced version to package.json');
 let metadata = '// ==UserScript==\n';
 metadata += `// @name          ${info.name}\n`;
 metadata += `// @namespace     ${info.namespace}\n`;
-metadata += `// @version       ${info.version}\n`;
+metadata += `// @version       ${packageJson.version}\n`;
 metadata += `// @author        ${info.author}\n`;
 metadata += `// @description   ${info.description}\n`;
 for (let grant of info.grants) {
@@ -82,5 +79,6 @@ console.log('Build completed!');
 
 // Clean matches (remove regular matches but keep custom matches)
 info.matches = [];
+info.version = "";
 fs.writeFileSync('scripts/metadata.json', JSON.stringify(info, null, 2));
 console.log('Cleaned match patterns from metadata.json');
