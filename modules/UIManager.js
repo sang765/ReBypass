@@ -86,7 +86,7 @@ class UIManager {
         const urlBox = document.getElementById(clickToCopyUrlId);
         const status = document.getElementById(copyStatusId);
         urlBox.onclick = () => {
-            GM_setClipboard(targetUrl);
+            ConfigManager.setClipboard(targetUrl);
             status.style.opacity = '1';
             setTimeout(() => { status.style.opacity = '0'; }, 1500);
         };

@@ -1,28 +1,5 @@
-let classifications = {};
 let cfg;
 let wt;
-
-async function loadClassifications() {
-    try {
-        const response = await fetch('https://raw.githubusercontent.com/sang765/ReBypass/refs/heads/main/domains-classification.json');
-        if (response.ok) {
-            classifications = await response.json();
-        } else {
-            throw new Error('Failed to fetch classifications');
-        }
-    } catch (e) {
-        console.warn('Failed to load domain classifications, using default times:', e);
-    }
-}
-
-function getDomainCategory(domain) {
-    for (const [cat, domains] of Object.entries(classifications)) {
-        if (domains.includes(domain)) {
-            return cat;
-        }
-    }
-    return 'default';
-}
 
 function showError(message) {
     if (document.body) {
@@ -51,54 +28,13 @@ function isValidUrl(url) {
 
 class MainController {
     static async init() {
-        await loadClassifications();
+        await ConfigManager.loadClassifications();
 
         // Menu commands for settings
-        GM_registerMenuCommand('Toggle Advanced Time Mode', () => {
-            const current = GM_getValue('advancedMode', true);
-            GM_setValue('advancedMode', !current);
-            alert(`Advanced Time Mode ${!current ? 'enabled' : 'disabled'}. Reload the page to apply.`);
-        });
+        ConfigManager.registerMenuCommands();
 
-        GM_registerMenuCommand('Toggle Stealth Mode', () => {
-            const current = GM_getValue('stealthMode', false);
-            GM_setValue('stealthMode', !current);
-            alert(`Stealth Mode ${!current ? 'enabled' : 'disabled'}. Reload the page to apply.`);
-        });
-
-        GM_registerMenuCommand('Set Global Wait Time', () => {
-            const time = prompt('Enter global wait time in seconds:', GM_getValue('globalTime', 25));
-            if (time !== null) {
-                const t = parseInt(time);
-                if (!isNaN(t) && t > 0) {
-                    GM_setValue('globalTime', t);
-                    alert(`Global wait time set to ${t} seconds. Reload the page to apply.`);
-                } else {
-                    alert('Invalid time. Must be a positive number.');
-                }
-            }
-        });
-
-        cfg = {
-            advancedMode: GM_getValue('advancedMode', true),
-            globalTime: GM_getValue('globalTime', 25),
-            key: GM_getValue('key', ''),
-            safeMode: GM_getValue('safeMode', true),
-            stealthMode: GM_getValue('stealthMode', false)
-        };
-
-        wt = GM_getValue('waitTimes', {
-            url_shortener: 20,
-            social_unlock: 5,
-            redirect_hub: 0,
-            lootlabs_ecosystem: 20,
-            mega_hub: 18,
-            leak_nsfw_hub: 25,
-            paste_text_host: 8,
-            community_discord: 10,
-            random_obfuscated: 15,
-            default: 25
-        });
+        cfg = ConfigManager.getConfig();
+        wt = ConfigManager.getWaitTimes();
 
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.runScript(), { once: true });
@@ -111,7 +47,7 @@ class MainController {
         const urlParams = new URLSearchParams(window.location.search);
 
         const currentDomain = window.location.hostname;
-        const category = getDomainCategory(currentDomain);
+        const category = ConfigManager.getDomainCategory(currentDomain);
         let waitTime = cfg.advancedMode ? (wt[category] || wt.default) : cfg.globalTime;
         // Add randomization to avoid detection
         waitTime += Math.floor(Math.random() * 6) - 3; // Randomize -3 to +2 seconds
@@ -199,11 +135,11 @@ class MainController {
                     const val = parseInt(document.getElementById(timeIdMap[cat]).value);
                     waitTimesNew[cat] = isNaN(val) ? wt[cat] : val;
                 }
-                GM_setValue('advancedMode', advancedMode);
-                GM_setValue('stealthMode', stealthMode);
-                GM_setValue('globalTime', globalTime);
-                GM_setValue('key', key);
-                GM_setValue('waitTimes', waitTimesNew);
+                ConfigManager.setValue('advancedMode', advancedMode);
+                ConfigManager.setValue('stealthMode', stealthMode);
+                ConfigManager.setValue('globalTime', globalTime);
+                ConfigManager.setValue('key', key);
+                ConfigManager.setValue('waitTimes', waitTimesNew);
                 settingsDropdown.style.display = 'none';
                 alert('Settings saved. Reload the page to apply changes.');
             });
@@ -285,8 +221,22 @@ class MainController {
             }, { passive: false });
 
             container.addEventListener('click', (e) => {
-                if (e.target && e.target.id === 'nextBtn') return;
+                // Allow clicks on interactive elements
+                const interactiveIds = [nextBtnId, cancelBtnId, settingsBtnId, saveSettingsId];
+                if (e.target && interactiveIds.includes(e.target.id)) return;
+                // Prevent clicks from passing through to the underlying page
+                e.preventDefault();
+                e.stopPropagation();
             });
+
+            container.addEventListener('touchstart', (e) => {
+                // Allow touches on interactive elements
+                const interactiveIds = [nextBtnId, cancelBtnId, settingsBtnId, saveSettingsId];
+                if (e.target && interactiveIds.includes(e.target.id)) return;
+                // Prevent touches from passing through to the underlying page
+                e.preventDefault();
+                e.stopPropagation();
+            }, { passive: false });
 
             try {
                 newBtn.setAttribute('aria-label', 'Proceed to link');
