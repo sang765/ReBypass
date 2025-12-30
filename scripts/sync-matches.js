@@ -46,7 +46,7 @@ async function main() {
 
         // Write back
         fs.writeFileSync(jsonPath, JSON.stringify(jsonData, null, 2));
-        console.log('Updated userscript-info.json with new match patterns.');
+        console.log('Updated metadata.json with new match patterns.');
     } catch (error) {
         console.error('Error:', error.message);
         process.exit(1);
