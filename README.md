@@ -43,6 +43,9 @@ Additional disclaimer applies if bypass failures are related to the bypass.vip A
 
 2. Install directly from the latest release: [Install Script](https://github.com/sang765/ReBypass/releases/latest/download/ReBypass.user.js)
 
+> [!WARNING]
+> - **Do not** install userscript from release because update not work because install from that is you install static version of userscript.
+
 ## Building the Userscript
 
 To build the userscript locally or contribute to the development:
