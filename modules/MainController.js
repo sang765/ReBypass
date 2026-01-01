@@ -134,6 +134,8 @@ class MainController {
             advancedModeInput.checked = cfg.advancedMode;
             timeInput.value = cfg.globalTime;
             keyInput.value = cfg.key;
+            const iframeEnabledInput = document.getElementById(iframeEnabledInputId);
+            iframeEnabledInput.checked = cfg.iframeEnabled;
 
             // Set initial values for advanced time inputs
             for (const cat of Object.keys(wt)) {
@@ -146,6 +148,7 @@ class MainController {
                 const advancedMode = document.getElementById(advancedModeInputId).checked;
                 const globalTime = parseInt(document.getElementById(timeInputId).value);
                 const key = document.getElementById(keyInputId).value;
+                const iframeEnabled = document.getElementById(iframeEnabledInputId).checked;
                 const waitTimesNew = {};
                 for (const cat of Object.keys(wt)) {
                     const val = parseInt(document.getElementById(timeIdMap[cat]).value);
@@ -154,12 +157,14 @@ class MainController {
                 ConfigManager.setValue('advancedMode', advancedMode);
                 ConfigManager.setValue('globalTime', globalTime);
                 ConfigManager.setValue('key', key);
+                ConfigManager.setValue('iframeEnabled', iframeEnabled);
                 ConfigManager.setValue('waitTimes', waitTimesNew);
-                
+
                 // Update local config variables to reflect changes immediately
                 cfg.advancedMode = advancedMode;
                 cfg.globalTime = globalTime;
                 cfg.key = key;
+                cfg.iframeEnabled = iframeEnabled;
                 wt = waitTimesNew;
                 
                 settingsDropdown.style.display = 'none';

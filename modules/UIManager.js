@@ -12,9 +12,9 @@ const settingsBtnId = randomId();
 const settingsDropdownId = randomId();
 const themeToggleBtnId = randomId();
 const advancedModeInputId = randomId();
-const stealthModeInputId = randomId();
 const timeInputId = randomId();
 const keyInputId = randomId();
+const iframeEnabledInputId = randomId();
 const timeUrlShortenerId = randomId();
 const timeSocialUnlockId = randomId();
 const timeRedirectHubId = randomId();
@@ -71,6 +71,7 @@ class UIManager {
     }
 
     static injectBypassInfoUI(targetUrl) {
+        const cfg = ConfigManager.getConfig();
         const container = document.querySelector('.highlights-container') || document.body;
         const infoDiv = document.createElement('div');
         infoDiv.style.cssText = `background: rgba(30,30,30,0.8); border:1px solid #333; border-radius:12px; padding:15px; margin:20px auto; max-width:600px; color:#fff; font-family:sans-serif;`;
@@ -83,6 +84,14 @@ class UIManager {
             <div id="${clickToCopyUrlId}" style="background: rgba(0,0,0,0.8); padding:10px; border-radius:6px; word-break:break-all; font-family:monospace; font-size:12px; border:1px solid #444; color:#2ecc71; cursor:pointer;" aria-label="Click to copy" tabindex="0">${targetUrl}</div>
         `;
         container.insertBefore(infoDiv, container.firstChild);
+
+        if (cfg.iframeEnabled) {
+            const iframeDiv = document.createElement('div');
+            iframeDiv.style.cssText = `margin:20px auto; max-width:600px;`;
+            const iframeSrc = `https://bypass.vip/userscript${window.location.search}`;
+            iframeDiv.innerHTML = `<iframe src="${iframeSrc}" style="width:100%; height:600px; border:none; border-radius:12px;"></iframe>`;
+            container.insertBefore(iframeDiv, container.firstChild);
+        }
 
         const urlBox = document.getElementById(clickToCopyUrlId);
         const status = document.getElementById(copyStatusId);
@@ -146,6 +155,10 @@ class UIManager {
                     <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; color: var(--text-color); cursor: pointer;">
                         <input id="${advancedModeInputId}" type="checkbox" style="width: 18px; height: 18px; cursor: pointer;">
                         <span style="cursor: pointer;">Advanced Time Mode</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; color: var(--text-color); cursor: pointer;">
+                        <input id="${iframeEnabledInputId}" type="checkbox" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="cursor: pointer;">Enable Iframe</span>
                     </label>
                     <label style="display: block; margin-bottom: 10px; color: var(--text-color);">
                         Global Time (seconds): <input id="${timeInputId}" type="number" style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;">
