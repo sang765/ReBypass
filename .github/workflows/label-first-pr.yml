@@ -1,0 +1,44 @@
+name: Auto Label First Pull Request
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  label-first-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check if first pull request
+        id: check-first-pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pulls } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'all',
+              author: context.payload.pull_request.user.login
+            });
+            
+            // Filter pulls that were created by the same user
+            const userPulls = pulls.filter(pr => pr.user.login === context.payload.pull_request.user.login);
+            
+            // Check if this is the first pull request
+            const isFirstPR = userPulls.length === 1;
+            
+            return isFirstPR;
+
+      - name: Apply first PR label
+        if: steps.check-first-pr.outputs.result == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['Frist Pull Request']
+            });

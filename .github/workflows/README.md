@@ -53,6 +53,29 @@ Labels are defined in `.github/labeler.yml`:
 #### Keywords-based Labels
 Labels are also applied based on keywords found in issue titles and descriptions.
 
+## Auto Label First Pull Request Workflow
+
+The `label-first-pr.yml` workflow automatically applies the `Frist Pull Request` label to pull requests from users who are contributing for the first time.
+
+### How it works
+
+1. **Trigger**: The workflow runs when a pull request is opened
+2. **User Check**: Uses GitHub API to check if the user has previously submitted pull requests to this repository
+3. **Label Application**: If this is their first pull request, automatically applies the `Frist Pull Request` label
+
+### Benefits
+
+- Identifies and welcomes new contributors
+- Helps maintainers recognize first-time contributors
+- Encourages community engagement with new developers
+
+### Customization
+
+To modify the first PR labeling behavior:
+
+1. Edit `.github/workflows/label-first-pr.yml` to change the logic
+2. Modify the label name in the workflow file if needed
+
 ### Issue Templates
 
 The project includes three issue templates:
