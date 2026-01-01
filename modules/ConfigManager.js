@@ -1,5 +1,5 @@
 class ConfigManager {
-    static DOMAIN_CLASSIFICATIONS_URL = 'https://raw.githubusercontent.com/sang765/ReBypass/refs/heads/main/domains-classification.json';
+    static DOMAIN_CLASSIFICATIONS_URL = 'https://raw.githubusercontent.com/sang765/ReBypass/main/domains-classification.json';
 
     static DEFAULT_WAIT_TIMES = {
         url_shortener: 20,
@@ -75,6 +75,7 @@ class ConfigManager {
     }
 
     static getDomainCategory(domain) {
+        domain = domain.replace(/^www\./, ''); // Normalize domain by removing www prefix
         for (const [cat, domains] of Object.entries(this.classifications)) {
             if (domains.includes(domain)) {
                 return cat;
