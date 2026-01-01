@@ -1,0 +1,241 @@
+# Auto-labeling configuration for issues based on templates
+
+# Label issues created from bug_report.md template
+"---\nname: Bug Report":
+  - "Bug"
+
+# Label issues created from feature_request.md template  
+"---\nname: Feature Request":
+  - "Featured Request"
+  - "enhancement"
+
+# Label issues created from question.md template
+"---\nname: Question/Help":
+  - "Question"
+  - "Help Wanted"
+
+# Label issues that contain specific keywords in the title
+"help wanted":
+  - "Help Wanted"
+
+"question":
+  - "Question"
+
+"documentation":
+  - "Documentation"
+
+"security":
+  - "Security"
+
+"first pull request":
+  - "Frist Pull Request"
+
+"todo":
+  - "TODO"
+
+"complete":
+  - "Complete"
+
+"duplicate":
+  - "Duplicate"
+
+"invalid":
+  - "Invalid"
+
+"wontfix":
+  - "Wontfix"
+
+"impossible":
+  - "Closed (Impossible)"
+
+"good first issue":
+  - "Good First Issue"
+
+# Label issues based on browser information
+"Firefox":
+  - "Gecko"
+  - "Firefox"
+
+"Zen Browser":
+  - "Gecko"
+
+"Chrome":
+  - "Chromium"
+  - "Chrome"
+
+"Edge":
+  - "Chromium"
+  - "Edge"
+
+"Safari":
+  - "Safari"
+
+"Brave":
+  - "Chromium"
+  - "Brave"
+
+"Opera":
+  - "Chromium"
+  - "Opera"
+
+"Vivaldi":
+  - "Chromium"
+  - "Vivaldi"
+
+# Label issues based on environment information
+"Windows":
+  - "Windows"
+
+"Linux":
+  - "Linux"
+
+"macOS":
+  - "macOS"
+
+"Ubuntu":
+  - "Linux"
+  - "Ubuntu"
+
+"Debian":
+  - "Linux"
+  - "Debian"
+
+"CentOS":
+  - "Linux"
+  - "CentOS"
+
+"Red Hat":
+  - "Linux"
+  - "Red Hat"
+
+"Fedora":
+  - "Linux"
+  - "Fedora"
+
+"Arch":
+  - "Linux"
+  - "Arch"
+
+"Gentoo":
+  - "Linux"
+  - "Gentoo"
+
+"FreeBSD":
+  - "FreeBSD"
+
+"OpenBSD":
+  - "OpenBSD"
+
+"NetBSD":
+  - "NetBSD"
+
+"Android":
+  - "Android"
+
+"iOS":
+  - "iOS"
+
+"iPadOS":
+  - "iPadOS"
+
+"watchOS":
+  - "watchOS"
+
+"tvOS":
+  - "tvOS"
+
+"Windows 10":
+  - "Windows"
+  - "Windows 10"
+
+"Windows 11":
+  - "Windows"
+  - "Windows 11"
+
+"Windows 8":
+  - "Windows"
+  - "Windows 8"
+
+"Windows 7":
+  - "Windows"
+  - "Windows 7"
+
+"Windows Vista":
+  - "Windows"
+  - "Windows Vista"
+
+"Windows XP":
+  - "Windows"
+  - "Windows XP"
+
+"macOS Monterey":
+  - "macOS"
+  - "macOS Monterey"
+
+"macOS Big Sur":
+  - "macOS"
+  - "macOS Big Sur"
+
+"macOS Catalina":
+  - "macOS"
+  - "macOS Catalina"
+
+"macOS Mojave":
+  - "macOS"
+  - "macOS Mojave"
+
+"macOS High Sierra":
+  - "macOS"
+  - "macOS High Sierra"
+
+"macOS Sierra":
+  - "macOS"
+  - "macOS Sierra"
+
+"OS X El Capitan":
+  - "macOS"
+  - "OS X El Capitan"
+
+"OS X Yosemite":
+  - "macOS"
+  - "OS X Yosemite"
+
+"OS X Mavericks":
+  - "macOS"
+  - "OS X Mavericks"
+
+"OS X Mountain Lion":
+  - "macOS"
+  - "OS X Mountain Lion"
+
+"OS X Lion":
+  - "macOS"
+  - "OS X Lion"
+
+"OS X Snow Leopard":
+  - "macOS"
+  - "OS X Snow Leopard"
+
+"OS X Leopard":
+  - "macOS"
+  - "OS X Leopard"
+
+"OS X Tiger":
+  - "macOS"
+  - "OS X Tiger"
+
+"OS X Panther":
+  - "macOS"
+  - "OS X Panther"
+
+"OS X Jaguar":
+  - "macOS"
+  - "OS X Jaguar"
+
+"OS X Puma":
+  - "macOS"
+  - "OS X Puma"
+
+"OS X Cheetah":
+  - "macOS"
+  - "OS X Cheetah"
