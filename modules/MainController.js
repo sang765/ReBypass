@@ -121,9 +121,14 @@ class MainController {
             // Settings dropdown toggle
             const settingsBtn = container.querySelector(`#${settingsBtnId}`);
             const settingsDropdown = container.querySelector(`#${settingsDropdownId}`);
-            settingsBtn.addEventListener('click', () => {
+            const toggleDropdown = () => {
                 settingsDropdown.style.display = settingsDropdown.style.display === 'none' ? 'block' : 'none';
-            });
+            };
+            settingsBtn.addEventListener('click', toggleDropdown);
+            settingsBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                toggleDropdown();
+            }, { passive: false });
 
             // Initialize settings with current config values
             const advancedModeInput = document.getElementById(advancedModeInputId);
@@ -144,7 +149,7 @@ class MainController {
             }
 
             const saveSettings = container.querySelector(`#${saveSettingsId}`);
-            saveSettings.addEventListener('click', () => {
+            const saveFunction = () => {
                 const advancedMode = document.getElementById(advancedModeInputId).checked;
                 const globalTime = parseInt(document.getElementById(timeInputId).value);
                 const key = document.getElementById(keyInputId).value;
@@ -166,10 +171,15 @@ class MainController {
                 cfg.key = key;
                 cfg.iframeEnabled = iframeEnabled;
                 wt = waitTimesNew;
-                
+
                 settingsDropdown.style.display = 'none';
                 alert('Settings saved. Changes applied immediately.');
-            });
+            };
+            saveSettings.addEventListener('click', saveFunction);
+            saveSettings.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                saveFunction();
+            }, { passive: false });
 
             // Cancel button
             const cancelBtn = container.querySelector(`#${cancelBtnId}`);
@@ -249,7 +259,7 @@ class MainController {
 
             // Prevent all pointer events from passing through to the underlying page
             const preventEventPropagation = (e) => {
-                const interactiveIds = [nextBtnId, cancelBtnId, settingsBtnId, themeToggleBtnId, saveSettingsId];
+                const interactiveIds = [nextBtnId, cancelBtnId, settingsBtnId, themeToggleBtnId, saveSettingsId, advancedModeInputId, timeInputId, keyInputId, iframeEnabledInputId, ...Object.values(timeIdMap)];
                 if (e.target && interactiveIds.includes(e.target.id)) return;
                 e.preventDefault();
                 e.stopPropagation();
