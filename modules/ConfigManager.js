@@ -88,7 +88,8 @@ class ConfigManager {
             advancedMode: this.getValue('advancedMode', true),
             globalTime: this.getValue('globalTime', 25),
             key: this.getValue('key', ''),
-            safeMode: this.getValue('safeMode', true)
+            safeMode: this.getValue('safeMode', true),
+            iframeEnabled: this.getValue('iframeEnabled', false)
         };
     }
 
