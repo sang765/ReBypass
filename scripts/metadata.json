@@ -1,5 +1,5 @@
 {
-  "name": "REBYPASS",
+  "name": "ReBypass",
   "namespace": "bypass.vip",
   "version": "",
   "author": "sang765",
@@ -30,7 +30,8 @@
   "requires": [],
   "downloadURL": "https://github.com/sang765/ReBypass/releases/latest/download/ReBypass.user.js",
   "updateURL": "https://github.com/sang765/ReBypass/releases/latest/download/ReBypass.user.js",
-  "homepageURL": "https://github.com/sang765/ReBypass",
+  "source": "https://github.com/sang765/ReBypass",
   "icon": "https://www.google.com/s2/favicons?domain=bypass.vip&sz=64",
-  "run-at": "document-start"
+  "run-at": "document-start",
+  "tag": "utilities"
 }

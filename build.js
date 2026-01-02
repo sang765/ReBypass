@@ -26,9 +26,10 @@ for (let exclude of info.excludes) {
 }
 metadata += `// @downloadURL   ${info.downloadURL}\n`;
 metadata += `// @updateURL     ${info.updateURL}\n`;
-metadata += `// @homepageURL   ${info.homepageURL}\n`;
+metadata += `// @source   ${info.source}\n`;
 metadata += `// @icon          ${info.icon}\n`;
 metadata += `// @run-at        ${info["run-at"]}\n`;
+metadata += `// @tag           ${info.tag}\n`;
 for (let req of info.requires || []) {
     metadata += `// @require       ${req}\n`;
 }
