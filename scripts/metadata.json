@@ -13,11 +13,15 @@
   ],
   "excludes": [
     "*://work.ink/token/*",
-    "*://www.work.ink/token/*",
     "*://r.work.ink/token/*",
     "*://workink.net/token/*",
     "*://workink.one/token/*",
-    "*://workink.me/token/*"
+    "*://workink.me/token/*",
+    "*://work.ink/?__cf_chl_rt_tk=*",
+    "*://r.work.ink/?__cf_chl_rt_tk=*",
+    "*://workink.net/?__cf_chl_rt_tk=*",
+    "*://workink.one/?__cf_chl_rt_tk=*",
+    "*://workink.me/?__cf_chl_rt_tk=*"
   ],
   "matches": [],
   "custom_matches": [
