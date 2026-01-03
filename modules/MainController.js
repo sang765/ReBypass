@@ -58,6 +58,36 @@ class MainController {
             return;
         }
 
+        // Check for Linkvertise Premium and skip bypass if active
+        if (currentDomain === 'linkvertise.com') {
+            UIManager.showPremiumCheckToast();
+            Utils.checkLinkvertisePremium().then(hasPremium => {
+                // Remove the toast
+                const existingToast = document.querySelector('.bypass-toast');
+                if (existingToast) existingToast.remove();
+                if (hasPremium) {
+                    // User has active Premium, skip bypass
+                    return;
+                } else {
+                    // Proceed with bypass
+                    this.proceedWithBypass(waitTime);
+                }
+            }).catch(() => {
+                // Remove the toast
+                const existingToast = document.querySelector('.bypass-toast');
+                if (existingToast) existingToast.remove();
+                // On error, proceed with bypass
+                this.proceedWithBypass(waitTime);
+            });
+            return;
+        }
+
+        this.proceedWithBypass(waitTime);
+    }
+
+    static proceedWithBypass(waitTime) {
+        const urlParams = new URLSearchParams(window.location.search);
+
         const rawRedirect = urlParams.get('redirect');
 
         if (!rawRedirect) {
