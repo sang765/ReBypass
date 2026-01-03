@@ -70,25 +70,6 @@ class UIManager {
         (document.body || document.documentElement).appendChild(toast);
     }
 
-    static showPremiumCheckToast() {
-        if (document.querySelector('.bypass-toast')) return;
-        const toast = document.createElement('div');
-        toast.id = toastId;
-        toast.className = 'bypass-toast';
-        toast.style.cssText = `
-            position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
-            background: rgba(18, 18, 18, 0.6); color: white; padding: 8px 16px;
-            border-radius: 30px; border: 1px solid #FFD700; z-index: 2147483647;
-            display: flex; align-items: center; font-family: 'Segoe UI', sans-serif;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-size: 13px; font-weight: 500;
-            pointer-events: none; backdrop-filter: blur(4px);
-        `;
-        toast.innerHTML = `
-            <img src="${BYPASS_LOGO}" style="width:18px; height:18px; margin-right:10px;">
-            <span>BYPASS.VIP: CHECKING PREMIUM STATUS...</span>
-        `;
-        (document.body || document.documentElement).appendChild(toast);
-    }
 
     static injectBypassInfoUI(targetUrl) {
         const cfg = ConfigManager.getConfig();
