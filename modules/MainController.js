@@ -71,7 +71,7 @@ class MainController {
             showStartingNotification();
             const delay = 800; // Fixed delay without stealth mode
             setTimeout(() => {
-                const targetUrl = `https://bypass.vip/userscript.html?url=${encodeURIComponent(location.href)}&time=${waitTime}&key=${cfg.key}&safe=${cfg.safeMode}&rnd=${Math.random().toString(36).substr(2, 9)}`;
+                const targetUrl = `https://bypass.vip/userscript?url=${encodeURIComponent(location.href)}&time=${waitTime}&key=${cfg.key}&safe=${cfg.safeMode}&rnd=${Math.random().toString(36).substr(2, 9)}`;
                 location.replace(targetUrl);
             }, delay);
             return;
@@ -100,7 +100,7 @@ class MainController {
         showStartingNotification();
 
         if (!Utils.hasWorkinkChallenge()) {
-            const container = UIManager.createContainer();
+            const container = UIManager.createContainer(cfg, waitTime);
             if (document.body) {
                 document.body.appendChild(container);
                 document.body.setAttribute('data-bypass-injected', 'true');
@@ -146,8 +146,6 @@ class MainController {
             advancedModeInput.checked = cfg.advancedMode;
             timeInput.value = cfg.globalTime;
             keyInput.value = cfg.key;
-            const iframeEnabledInput = document.getElementById(iframeEnabledInputId);
-            iframeEnabledInput.checked = cfg.iframeEnabled;
 
             // Set initial values for advanced time inputs
             for (const cat of Object.keys(wt)) {
@@ -160,7 +158,6 @@ class MainController {
                 const advancedMode = document.getElementById(advancedModeInputId).checked;
                 const globalTime = parseInt(document.getElementById(timeInputId).value);
                 const key = document.getElementById(keyInputId).value;
-                const iframeEnabled = document.getElementById(iframeEnabledInputId).checked;
                 const waitTimesNew = {};
                 for (const cat of Object.keys(wt)) {
                     const val = parseInt(document.getElementById(timeIdMap[cat]).value);
@@ -169,14 +166,12 @@ class MainController {
                 ConfigManager.setValue('advancedMode', advancedMode);
                 ConfigManager.setValue('globalTime', globalTime);
                 ConfigManager.setValue('key', key);
-                ConfigManager.setValue('iframeEnabled', iframeEnabled);
                 ConfigManager.setValue('waitTimes', waitTimesNew);
 
                 // Update local config variables to reflect changes immediately
                 cfg.advancedMode = advancedMode;
                 cfg.globalTime = globalTime;
                 cfg.key = key;
-                cfg.iframeEnabled = iframeEnabled;
                 wt = waitTimesNew;
 
                 settingsDropdown.style.display = 'none';
@@ -266,7 +261,7 @@ class MainController {
 
             // Prevent all pointer events from passing through to the underlying page
             const preventEventPropagation = (e) => {
-                const interactiveIds = [nextBtnId, cancelBtnId, settingsBtnId, themeToggleBtnId, saveSettingsId, advancedModeInputId, timeInputId, keyInputId, iframeEnabledInputId, ...Object.values(timeIdMap)];
+                const interactiveIds = [nextBtnId, cancelBtnId, settingsBtnId, themeToggleBtnId, saveSettingsId, advancedModeInputId, timeInputId, keyInputId, ...Object.values(timeIdMap)];
                 if (e.target && interactiveIds.includes(e.target.id)) return;
                 e.preventDefault();
                 e.stopPropagation();

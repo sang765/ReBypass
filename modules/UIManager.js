@@ -14,7 +14,6 @@ const themeToggleBtnId = randomId();
 const advancedModeInputId = randomId();
 const timeInputId = randomId();
 const keyInputId = randomId();
-const iframeEnabledInputId = randomId();
 const timeUrlShortenerId = randomId();
 const timeSocialUnlockId = randomId();
 const timeRedirectHubId = randomId();
@@ -86,14 +85,6 @@ class UIManager {
         `;
         container.insertBefore(infoDiv, container.firstChild);
 
-        if (cfg.iframeEnabled) {
-            const iframeDiv = document.createElement('div');
-            iframeDiv.style.cssText = `margin:20px auto; max-width:600px;`;
-            const iframeSrc = `https://bypass.vip/userscript${window.location.search}`;
-            iframeDiv.innerHTML = `<iframe src="${iframeSrc}" style="width:100%; height:600px; border:none; border-radius:12px;"></iframe>`;
-            container.insertBefore(iframeDiv, container.firstChild);
-        }
-
         const urlBox = document.getElementById(clickToCopyUrlId);
         const status = document.getElementById(copyStatusId);
         urlBox.onclick = () => {
@@ -103,7 +94,7 @@ class UIManager {
         };
     }
 
-    static createContainer() {
+    static createContainer(cfg, waitTime) {
         // Hide any existing toast notification
         const existingToast = document.querySelector('.bypass-toast');
         if (existingToast) existingToast.remove();
@@ -156,10 +147,6 @@ class UIManager {
                     <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; color: var(--text-color); cursor: pointer;">
                         <input id="${advancedModeInputId}" type="checkbox" style="width: 18px; height: 18px; cursor: pointer;">
                         <span style="cursor: pointer;">Advanced Time Mode</span>
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; color: var(--text-color); cursor: pointer;">
-                        <input id="${iframeEnabledInputId}" type="checkbox" style="width: 18px; height: 18px; cursor: pointer;">
-                        <span style="cursor: pointer;">Enable Iframe</span>
                     </label>
                     <label style="display: block; margin-bottom: 10px; color: var(--text-color);">
                         Global Time (seconds): <input id="${timeInputId}" type="number" style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;">
@@ -259,6 +246,7 @@ class UIManager {
                 }
             </style>
         `;
+
         return container;
     }
 

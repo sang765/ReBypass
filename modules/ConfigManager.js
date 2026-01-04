@@ -113,8 +113,7 @@ class ConfigManager {
             advancedMode: this.getValueAndSetIfMissing('advancedMode', true),
             globalTime: this.getValueAndSetIfMissing('globalTime', 25),
             key: this.getValueAndSetIfMissing('key', ''),
-            safeMode: this.getValueAndSetIfMissing('safeMode', true),
-            iframeEnabled: this.getValueAndSetIfMissing('iframeEnabled', false)
+            safeMode: this.getValueAndSetIfMissing('safeMode', true)
         };
     }
 
