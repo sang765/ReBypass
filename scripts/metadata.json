@@ -9,7 +9,8 @@
     "GM_info",
     "GM_setValue",
     "GM_getValue",
-    "GM_registerMenuCommand"
+    "GM_registerMenuCommand",
+    "unsafeWindow"
   ],
   "excludes": [
     "*://work.ink/token/*",

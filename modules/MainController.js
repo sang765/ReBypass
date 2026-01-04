@@ -58,8 +58,12 @@ class MainController {
             return;
         }
 
-
-        this.proceedWithBypass(waitTime);
+        // Check if iframe mode is enabled and current page is a bypass site
+        if (cfg.iframeMode && IframeManager.isBypassPage()) {
+            this.proceedWithIframeBypass(waitTime);
+        } else {
+            this.proceedWithBypass(waitTime);
+        }
     }
 
     static proceedWithBypass(waitTime) {
@@ -139,13 +143,29 @@ class MainController {
 
             // Initialize settings with current config values
             const advancedModeInput = document.getElementById(advancedModeInputId);
+            const iframeModeInput = document.getElementById(iframeModeInputId);
             const timeInput = document.getElementById(timeInputId);
             const keyInput = document.getElementById(keyInputId);
+            const iframeWidthInput = document.getElementById(iframeWidthInputId);
+            const iframeHeightInput = document.getElementById(iframeHeightInputId);
+            const iframeTransparencyInput = document.getElementById(iframeTransparencyInputId);
+            const iframeEnableResizeInput = document.getElementById(iframeEnableResizeInputId);
+            const iframeEnableDragInput = document.getElementById(iframeEnableDragInputId);
+            const iframeFallbackToTabInput = document.getElementById(iframeFallbackToTabInputId);
+            const iframeLogActionsInput = document.getElementById(iframeLogActionsInputId);
 
             // Set initial values from config
             advancedModeInput.checked = cfg.advancedMode;
+            iframeModeInput.checked = cfg.iframeMode;
             timeInput.value = cfg.globalTime;
             keyInput.value = cfg.key;
+            iframeWidthInput.value = cfg.iframeWidth;
+            iframeHeightInput.value = cfg.iframeHeight;
+            iframeTransparencyInput.value = cfg.iframeTransparency;
+            iframeEnableResizeInput.checked = cfg.iframeEnableResize;
+            iframeEnableDragInput.checked = cfg.iframeEnableDrag;
+            iframeFallbackToTabInput.checked = cfg.iframeFallbackToTab;
+            iframeLogActionsInput.checked = cfg.iframeLogActions;
 
             // Set initial values for advanced time inputs
             for (const cat of Object.keys(wt)) {
@@ -156,22 +176,48 @@ class MainController {
             const saveSettings = container.querySelector(`#${saveSettingsId}`);
             const saveFunction = () => {
                 const advancedMode = document.getElementById(advancedModeInputId).checked;
+                const iframeMode = document.getElementById(iframeModeInputId).checked;
                 const globalTime = parseInt(document.getElementById(timeInputId).value);
                 const key = document.getElementById(keyInputId).value;
+                const iframeWidth = document.getElementById(iframeWidthInputId).value;
+                const iframeHeight = document.getElementById(iframeHeightInputId).value;
+                const iframeTransparency = parseFloat(document.getElementById(iframeTransparencyInputId).value);
+                const iframeEnableResize = document.getElementById(iframeEnableResizeInputId).checked;
+                const iframeEnableDrag = document.getElementById(iframeEnableDragInputId).checked;
+                const iframeFallbackToTab = document.getElementById(iframeFallbackToTabInputId).checked;
+                const iframeLogActions = document.getElementById(iframeLogActionsInputId).checked;
+
                 const waitTimesNew = {};
                 for (const cat of Object.keys(wt)) {
                     const val = parseInt(document.getElementById(timeIdMap[cat]).value);
                     waitTimesNew[cat] = isNaN(val) ? wt[cat] : val;
                 }
+
                 ConfigManager.setValue('advancedMode', advancedMode);
+                ConfigManager.setValue('iframeMode', iframeMode);
                 ConfigManager.setValue('globalTime', globalTime);
                 ConfigManager.setValue('key', key);
+                ConfigManager.setValue('iframeWidth', iframeWidth);
+                ConfigManager.setValue('iframeHeight', iframeHeight);
+                ConfigManager.setValue('iframeTransparency', isNaN(iframeTransparency) ? 0.95 : iframeTransparency);
+                ConfigManager.setValue('iframeEnableResize', iframeEnableResize);
+                ConfigManager.setValue('iframeEnableDrag', iframeEnableDrag);
+                ConfigManager.setValue('iframeFallbackToTab', iframeFallbackToTab);
+                ConfigManager.setValue('iframeLogActions', iframeLogActions);
                 ConfigManager.setValue('waitTimes', waitTimesNew);
 
                 // Update local config variables to reflect changes immediately
                 cfg.advancedMode = advancedMode;
+                cfg.iframeMode = iframeMode;
                 cfg.globalTime = globalTime;
                 cfg.key = key;
+                cfg.iframeWidth = iframeWidth;
+                cfg.iframeHeight = iframeHeight;
+                cfg.iframeTransparency = isNaN(iframeTransparency) ? 0.95 : iframeTransparency;
+                cfg.iframeEnableResize = iframeEnableResize;
+                cfg.iframeEnableDrag = iframeEnableDrag;
+                cfg.iframeFallbackToTab = iframeFallbackToTab;
+                cfg.iframeLogActions = iframeLogActions;
                 wt = waitTimesNew;
 
                 settingsDropdown.style.display = 'none';
@@ -261,7 +307,7 @@ class MainController {
 
             // Prevent all pointer events from passing through to the underlying page
             const preventEventPropagation = (e) => {
-                const interactiveIds = [nextBtnId, cancelBtnId, settingsBtnId, themeToggleBtnId, saveSettingsId, advancedModeInputId, timeInputId, keyInputId, ...Object.values(timeIdMap)];
+                const interactiveIds = [nextBtnId, cancelBtnId, settingsBtnId, themeToggleBtnId, saveSettingsId, advancedModeInputId, iframeModeInputId, timeInputId, keyInputId, iframeWidthInputId, iframeHeightInputId, iframeTransparencyInputId, iframeEnableResizeInputId, iframeEnableDragInputId, iframeFallbackToTabInputId, iframeLogActionsInputId, ...Object.values(timeIdMap)];
                 if (e.target && interactiveIds.includes(e.target.id)) return;
                 e.preventDefault();
                 e.stopPropagation();
@@ -278,6 +324,21 @@ class MainController {
                 newBtn.setAttribute('aria-label', 'Proceed to link');
                 newBtn.tabIndex = 0;
             } catch (err) { /* silent */ }
+        }
+    }
+
+    static async proceedWithIframeBypass(waitTime) {
+        try {
+            const success = await IframeManager.initForCurrentPage();
+            if (!success) {
+                // Fallback to traditional bypass if iframe fails
+                console.log('Iframe bypass failed, falling back to traditional method');
+                this.proceedWithBypass(waitTime);
+            }
+        } catch (error) {
+            console.error('Iframe bypass error:', error);
+            // Fallback to traditional bypass
+            this.proceedWithBypass(waitTime);
         }
     }
 }

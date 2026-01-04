@@ -42,6 +42,7 @@ const modules = [
     'modules/UIManager.js',
     'modules/ErrorHandler.js',
     'modules/EventManager.js',
+    'modules/IframeManager.js',
     'modules/MainController.js'
 ];
 

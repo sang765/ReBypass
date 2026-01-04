@@ -24,6 +24,14 @@ const timePasteTextHostId = randomId();
 const timeCommunityDiscordId = randomId();
 const timeRandomObfuscatedId = randomId();
 const timeDefaultId = randomId();
+const iframeModeInputId = randomId();
+const iframeWidthInputId = randomId();
+const iframeHeightInputId = randomId();
+const iframeTransparencyInputId = randomId();
+const iframeEnableResizeInputId = randomId();
+const iframeEnableDragInputId = randomId();
+const iframeFallbackToTabInputId = randomId();
+const iframeLogActionsInputId = randomId();
 const saveSettingsId = randomId();
 const nextBtnId = randomId();
 const cancelBtnId = randomId();
@@ -141,12 +149,16 @@ class UIManager {
                 ">⚙️ Settings</button>
                 <div id="${settingsDropdownId}" style="
                     display: none; position: absolute; top: 40px; right: 0; background: rgba(30,30,30,0.8);
-                    border: 1px solid #333; border-radius: 8px; padding: 15px; width: 250px; max-height: 500px; overflow-y: auto;
+                    border: 1px solid #333; border-radius: 8px; padding: 15px; width: 280px; max-height: 600px; overflow-y: auto;
                     box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 2147483648;
                 ">
                     <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; color: var(--text-color); cursor: pointer;">
                         <input id="${advancedModeInputId}" type="checkbox" style="width: 18px; height: 18px; cursor: pointer;">
                         <span style="cursor: pointer;">Advanced Time Mode</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; color: var(--text-color); cursor: pointer;">
+                        <input id="${iframeModeInputId}" type="checkbox" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="cursor: pointer;">Iframe Mode</span>
                     </label>
                     <label style="display: block; margin-bottom: 10px; color: var(--text-color);">
                         Global Time (seconds): <input id="${timeInputId}" type="number" style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;">
@@ -165,6 +177,26 @@ class UIManager {
                     <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">community_discord: <input id="${timeCommunityDiscordId}" type="number" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
                     <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">random_obfuscated: <input id="${timeRandomObfuscatedId}" type="number" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
                     <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">default: <input id="${timeDefaultId}" type="number" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
+                    <h4 style="margin: 15px 0 5px 0; color: var(--text-color); font-size: 0.9em;">Iframe Settings:</h4>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">Width: <input id="${iframeWidthInputId}" type="text" style="width: 60px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">Height: <input id="${iframeHeightInputId}" type="text" style="width: 60px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em;">Transparency (0-1): <input id="${iframeTransparencyInputId}" type="number" step="0.1" min="0" max="1" style="width: 50px; padding: 2px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;"></label>
+                    <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em; cursor: pointer;">
+                        <input id="${iframeEnableResizeInputId}" type="checkbox" style="width: 14px; height: 14px; cursor: pointer;">
+                        <span style="cursor: pointer;">Enable Resize</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em; cursor: pointer;">
+                        <input id="${iframeEnableDragInputId}" type="checkbox" style="width: 14px; height: 14px; cursor: pointer;">
+                        <span style="cursor: pointer;">Enable Drag</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px; color: var(--text-color); font-size: 0.8em; cursor: pointer;">
+                        <input id="${iframeFallbackToTabInputId}" type="checkbox" style="width: 14px; height: 14px; cursor: pointer;">
+                        <span style="cursor: pointer;">Fallback to Tab</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; color: var(--text-color); font-size: 0.8em; cursor: pointer;">
+                        <input id="${iframeLogActionsInputId}" type="checkbox" style="width: 14px; height: 14px; cursor: pointer;">
+                        <span style="cursor: pointer;">Log Actions</span>
+                    </label>
                     <button id="${saveSettingsId}" style="
                         width: 100%; padding: 8px; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;
                         transition: background 0.3s;

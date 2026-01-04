@@ -113,7 +113,17 @@ class ConfigManager {
             advancedMode: this.getValueAndSetIfMissing('advancedMode', true),
             globalTime: this.getValueAndSetIfMissing('globalTime', 25),
             key: this.getValueAndSetIfMissing('key', ''),
-            safeMode: this.getValueAndSetIfMissing('safeMode', true)
+            safeMode: this.getValueAndSetIfMissing('safeMode', true),
+            iframeMode: this.getValueAndSetIfMissing('iframeMode', false),
+            iframeWidth: this.getValueAndSetIfMissing('iframeWidth', '90%'),
+            iframeHeight: this.getValueAndSetIfMissing('iframeHeight', '80%'),
+            iframePosition: this.getValueAndSetIfMissing('iframePosition', 'center'),
+            iframeTransparency: this.getValueAndSetIfMissing('iframeTransparency', 0.95),
+            iframeEnableResize: this.getValueAndSetIfMissing('iframeEnableResize', true),
+            iframeEnableDrag: this.getValueAndSetIfMissing('iframeEnableDrag', true),
+            iframeAutoCloseOnSuccess: this.getValueAndSetIfMissing('iframeAutoCloseOnSuccess', true),
+            iframeFallbackToTab: this.getValueAndSetIfMissing('iframeFallbackToTab', true),
+            iframeLogActions: this.getValueAndSetIfMissing('iframeLogActions', true)
         };
     }
 
@@ -139,6 +149,30 @@ class ConfigManager {
                     alert('Invalid time. Must be a positive number.');
                 }
             }
+        });
+
+        this.registerMenuCommand('Toggle Iframe Mode', () => {
+            const current = this.getValue('iframeMode', true);
+            this.setValue('iframeMode', !current);
+            alert(`Iframe Mode ${!current ? 'enabled' : 'disabled'}. Reload the page to apply.`);
+        });
+
+        this.registerMenuCommand('Configure Iframe Settings', () => {
+            const width = prompt('Enter iframe width (e.g., 90% or 800px):', this.getValue('iframeWidth', '90%'));
+            if (width !== null) this.setValue('iframeWidth', width);
+
+            const height = prompt('Enter iframe height (e.g., 80% or 600px):', this.getValue('iframeHeight', '80%'));
+            if (height !== null) this.setValue('iframeHeight', height);
+
+            const transparency = prompt('Enter transparency (0.0-1.0):', this.getValue('iframeTransparency', 0.95));
+            if (transparency !== null) {
+                const t = parseFloat(transparency);
+                if (!isNaN(t) && t >= 0 && t <= 1) {
+                    this.setValue('iframeTransparency', t);
+                }
+            }
+
+            alert('Iframe settings updated. Reload the page to apply.');
         });
     }
 }
