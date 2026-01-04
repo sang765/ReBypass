@@ -31,6 +31,29 @@ class ConfigManager {
         }
     }
 
+    static getValueAndSetIfMissing(key, defaultValue) {
+        let value;
+        if (typeof GM_getValue === 'function') {
+            value = GM_getValue(key, null);
+            if (value === null) {
+                GM_setValue(key, defaultValue);
+                return defaultValue;
+            }
+            return value;
+        } else {
+            const stored = localStorage.getItem('ReBypass_' + key);
+            if (stored === null) {
+                localStorage.setItem('ReBypass_' + key, JSON.stringify(defaultValue));
+                return defaultValue;
+            }
+            try {
+                return JSON.parse(stored);
+            } catch {
+                return stored;
+            }
+        }
+    }
+
     static setValue(key, value) {
         if (typeof GM_setValue === 'function') {
             GM_setValue(key, value);
@@ -84,18 +107,19 @@ class ConfigManager {
         return 'default';
     }
 
+
     static getConfig() {
         return {
-            advancedMode: this.getValue('advancedMode', true),
-            globalTime: this.getValue('globalTime', 25),
-            key: this.getValue('key', ''),
-            safeMode: this.getValue('safeMode', true),
-            iframeEnabled: this.getValue('iframeEnabled', false)
+            advancedMode: this.getValueAndSetIfMissing('advancedMode', true),
+            globalTime: this.getValueAndSetIfMissing('globalTime', 25),
+            key: this.getValueAndSetIfMissing('key', ''),
+            safeMode: this.getValueAndSetIfMissing('safeMode', true),
+            iframeEnabled: this.getValueAndSetIfMissing('iframeEnabled', false)
         };
     }
 
     static getWaitTimes() {
-        return this.getValue('waitTimes', this.DEFAULT_WAIT_TIMES);
+        return this.getValueAndSetIfMissing('waitTimes', this.DEFAULT_WAIT_TIMES);
     }
 
     static registerMenuCommands() {
