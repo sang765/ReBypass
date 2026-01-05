@@ -137,6 +137,29 @@ class MainController {
                 toggleDropdown();
             }, { passive: false });
 
+            // Create eyes button outside the container
+            const { eyesContainer, eyesBtn } = UIManager.createEyesButton(container);
+            
+            // Eyes button toggle for container visibility
+            let isContainerVisible = true;
+            const toggleContainerVisibility = () => {
+                isContainerVisible = !isContainerVisible;
+                if (isContainerVisible) {
+                    container.style.display = 'flex';
+                    eyesBtn.innerHTML = '👁️';
+                    eyesBtn.classList.remove('hidden');
+                } else {
+                    container.style.display = 'none';
+                    eyesBtn.innerHTML = '🔒';
+                    eyesBtn.classList.add('hidden');
+                }
+            };
+            eyesBtn.addEventListener('click', toggleContainerVisibility);
+            eyesBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                toggleContainerVisibility();
+            }, { passive: false });
+
             // Initialize settings with current config values
             const advancedModeInput = document.getElementById(advancedModeInputId);
             const timeInput = document.getElementById(timeInputId);
@@ -186,6 +209,7 @@ class MainController {
             // Cancel button
             const cancelBtn = container.querySelector(`#${cancelBtnId}`);
             cancelBtn.addEventListener('click', () => {
+                UIManager.removeEyesButton();
                 if (confirm('Are you sure you want to cancel and reload?')) {
                     location.reload();
                 }
@@ -232,6 +256,7 @@ class MainController {
                 try {
                     newBtn.disabled = true;
                     spinner.style.display = 'block';
+                    UIManager.removeEyesButton(); // Remove eyes button before redirect
                     const randomDelay = Math.random() * 200 + 60; // Randomize 60-260ms
                     setTimeout(() => {
                         try {
@@ -261,7 +286,7 @@ class MainController {
 
             // Prevent all pointer events from passing through to the underlying page
             const preventEventPropagation = (e) => {
-                const interactiveIds = [nextBtnId, cancelBtnId, settingsBtnId, themeToggleBtnId, saveSettingsId, advancedModeInputId, timeInputId, keyInputId, ...Object.values(timeIdMap)];
+                const interactiveIds = [nextBtnId, cancelBtnId, settingsBtnId, themeToggleBtnId, saveSettingsId, advancedModeInputId, timeInputId, keyInputId, eyesBtnId, ...Object.values(timeIdMap)];
                 if (e.target && interactiveIds.includes(e.target.id)) return;
                 e.preventDefault();
                 e.stopPropagation();

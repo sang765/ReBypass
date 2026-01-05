@@ -11,6 +11,8 @@ const containerId = randomId();
 const settingsBtnId = randomId();
 const settingsDropdownId = randomId();
 const themeToggleBtnId = randomId();
+const eyesBtnId = randomId();
+const eyesContainerId = randomId();
 const advancedModeInputId = randomId();
 const timeInputId = randomId();
 const keyInputId = randomId();
@@ -260,6 +262,69 @@ class UIManager {
         // Apply theme-specific styles if needed
         // The container already uses CSS variables for theming
         // This method can be extended for more complex theme switching
+    }
+
+    static createEyesButton(container) {
+        const eyesContainer = document.createElement('div');
+        eyesContainer.id = eyesContainerId;
+        eyesContainer.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2147483648;
+        `;
+        
+        const eyesBtn = document.createElement('button');
+        eyesBtn.id = eyesBtnId;
+        eyesBtn.innerHTML = '👁️';
+        eyesBtn.title = 'Toggle Container Visibility';
+        eyesBtn.style.cssText = `
+            background: rgba(18, 18, 18, 0.9);
+            border: 1px solid #1E88E5;
+            color: #1E88E5;
+            padding: 10px 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
+        
+        eyesContainer.appendChild(eyesBtn);
+        
+        // Append to body (outside container)
+        if (document.body) {
+            document.body.appendChild(eyesContainer);
+        } else {
+            document.documentElement.appendChild(eyesContainer);
+        }
+        
+        // Add hover styles via JavaScript
+        eyesBtn.addEventListener('mouseenter', () => {
+            eyesBtn.style.background = '#1E88E5';
+            eyesBtn.style.color = 'white';
+            eyesBtn.style.transform = 'scale(1.1)';
+        });
+        
+        eyesBtn.addEventListener('mouseleave', () => {
+            eyesBtn.style.background = 'rgba(18, 18, 18, 0.9)';
+            eyesBtn.style.color = '#1E88E5';
+            eyesBtn.style.transform = 'scale(1)';
+        });
+        
+        return { eyesContainer, eyesBtn };
+    }
+
+    static removeEyesButton() {
+        const existingEyes = document.getElementById(eyesContainerId);
+        if (existingEyes) {
+            existingEyes.remove();
+        }
     }
 }
 
