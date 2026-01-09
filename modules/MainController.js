@@ -174,6 +174,7 @@ class MainController {
             const advancedModeInput = document.getElementById(advancedModeInputId);
             const timeInput = document.getElementById(timeInputId);
             const keyInput = document.getElementById(keyInputId);
+            const askModeInput = document.getElementById(askModeInputId);
 
             // Set initial values from config
             advancedModeInput.checked = cfg.advancedMode;
