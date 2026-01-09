@@ -11,6 +11,7 @@
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/sang765/ReBypass?style=for-the-badge&logo=github)
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
 ![npm](https://img.shields.io/badge/npm-%23000000.svg?style=for-the-badge&logo=npm&logoColor=white)
+![Bun](https://img.shields.io/badge/Bun-%23000000.svg?style=for-the-badge&logo=bun&logoColor=white)
 
 </div>
 
@@ -60,11 +61,11 @@ cd ReBypass
 ```
 3. Install dependencies:  
 ```bash
-npm install
+bun install
 ```  
 4. Build the userscript:  
 ```bash
-npm run build
+bun run build
 ```  
 5. The built userscript `ReBypass.user.js` will be created in the root directory.
 6. Follow the installation steps above using the built file.
