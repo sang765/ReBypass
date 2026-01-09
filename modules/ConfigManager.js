@@ -113,7 +113,8 @@ class ConfigManager {
             advancedMode: this.getValueAndSetIfMissing('advancedMode', true),
             globalTime: this.getValueAndSetIfMissing('globalTime', 25),
             key: this.getValueAndSetIfMissing('key', ''),
-            safeMode: this.getValueAndSetIfMissing('safeMode', true)
+            safeMode: this.getValueAndSetIfMissing('safeMode', true),
+            askMode: this.getValueAndSetIfMissing('askMode', true)
         };
     }
 

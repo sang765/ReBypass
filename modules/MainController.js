@@ -58,6 +58,12 @@ class MainController {
             return;
         }
 
+        if (cfg.askMode) {
+            const confirmBypass = confirm('ReBypass: Hey, do you want to bypass this link?');
+            if (!confirmBypass) {
+                return;
+            }
+        }
 
         this.proceedWithBypass(waitTime);
     }
@@ -169,6 +175,7 @@ class MainController {
             advancedModeInput.checked = cfg.advancedMode;
             timeInput.value = cfg.globalTime;
             keyInput.value = cfg.key;
+            askModeInput.checked = cfg.askMode;
 
             // Set initial values for advanced time inputs
             for (const cat of Object.keys(wt)) {
@@ -181,6 +188,7 @@ class MainController {
                 const advancedMode = document.getElementById(advancedModeInputId).checked;
                 const globalTime = parseInt(document.getElementById(timeInputId).value);
                 const key = document.getElementById(keyInputId).value;
+                const askMode = document.getElementById(askModeInputId).checked;
                 const waitTimesNew = {};
                 for (const cat of Object.keys(wt)) {
                     const val = parseInt(document.getElementById(timeIdMap[cat]).value);
@@ -189,12 +197,14 @@ class MainController {
                 ConfigManager.setValue('advancedMode', advancedMode);
                 ConfigManager.setValue('globalTime', globalTime);
                 ConfigManager.setValue('key', key);
+                ConfigManager.setValue('askMode', askMode);
                 ConfigManager.setValue('waitTimes', waitTimesNew);
 
                 // Update local config variables to reflect changes immediately
                 cfg.advancedMode = advancedMode;
                 cfg.globalTime = globalTime;
                 cfg.key = key;
+                cfg.askMode = askMode;
                 wt = waitTimesNew;
 
                 settingsDropdown.style.display = 'none';
@@ -286,7 +296,7 @@ class MainController {
 
             // Prevent all pointer events from passing through to the underlying page
             const preventEventPropagation = (e) => {
-                const interactiveIds = [nextBtnId, cancelBtnId, settingsBtnId, themeToggleBtnId, saveSettingsId, advancedModeInputId, timeInputId, keyInputId, eyesBtnId, ...Object.values(timeIdMap)];
+                const interactiveIds = [nextBtnId, cancelBtnId, settingsBtnId, themeToggleBtnId, saveSettingsId, advancedModeInputId, timeInputId, keyInputId, askModeInputId, eyesBtnId, ...Object.values(timeIdMap)];
                 if (e.target && interactiveIds.includes(e.target.id)) return;
                 e.preventDefault();
                 e.stopPropagation();
