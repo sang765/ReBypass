@@ -45,6 +45,7 @@ class MainController {
 
     static runScript() {
         const urlParams = new URLSearchParams(window.location.search);
+        const rawRedirect = urlParams.get('redirect');
 
         const currentDomain = window.location.hostname;
         const category = ConfigManager.getDomainCategory(currentDomain);
@@ -58,20 +59,23 @@ class MainController {
             return;
         }
 
-        if (cfg.askMode) {
+        // Only ask for bypass confirmation when there's no redirect parameter
+        if (cfg.askMode && !rawRedirect) {
             const confirmBypass = confirm('ReBypass: Hey, do you want to bypass this link?');
             if (!confirmBypass) {
                 return;
             }
         }
 
-        this.proceedWithBypass(waitTime);
+        this.proceedWithBypass(waitTime, rawRedirect);
     }
 
-    static proceedWithBypass(waitTime) {
+    static proceedWithBypass(waitTime, rawRedirect = null) {
         const urlParams = new URLSearchParams(window.location.search);
 
-        const rawRedirect = urlParams.get('redirect');
+        if (!rawRedirect) {
+            rawRedirect = urlParams.get('redirect');
+        }
 
         if (!rawRedirect) {
             showStartingNotification();
