@@ -53,9 +53,12 @@ jobs:
       id: changelog
       run: |
         CURRENT_TAG="${{ steps.version.outputs.version }}"
-        # Find the most recent tag before the current one
-        # If this is the first tag, PREVIOUS_TAG will be empty
-        PREVIOUS_TAG=$(git describe --tags --abbrev=0 --exclude="$CURRENT_TAG" 2>/dev/null || echo "")
+
+        # Get all tags sorted by version, excluding current tag
+        ALL_TAGS=$(git tag -l | grep -v "^${CURRENT_TAG}$" | sort -V | tail -n +1)
+
+        # Get the most recent tag before current one
+        PREVIOUS_TAG=$(git tag -l | grep -v "^${CURRENT_TAG}$" | sort -V | tail -n 1)
 
         echo "Current Tag: $CURRENT_TAG"
         echo "Previous Tag: $PREVIOUS_TAG"
