@@ -7,11 +7,15 @@ on:
 jobs:
   release-build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
-    - name: Checkout code & Install Bun
+    - name: Checkout code
       uses: actions/checkout@v4
-      uses: oven-sh/setup-bun@v2
+
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v1
 
     - name: Install dependencies
       run: bun install
@@ -19,53 +23,20 @@ jobs:
     - name: Build userscript
       run: bun run build
 
-    - name: Generate release info
-      id: release_info
-      uses: actions/github-script@v7
+    - name: Generate Release Changelog
+      id: changelog
+      run: |
+        date=$(date +'%Y/%m/%d')
+        body="Release ReBypass artifact, generated on ${date}"
+        echo "body=${body}" >> $GITHUB_OUTPUT
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2.5.0
       with:
-        script: |
-          const fs = require('fs');
-
-          // Get version
-          const version = context.payload.release.tag_name;
-
-          // Get date
-          const date = new Date().toISOString().split('T')[0].replace(/-/g, '/');
-
-          const body = `Release ReBypass artifact, generated on ${date}`;
-
-          fs.appendFileSync(process.env.GITHUB_OUTPUT, `version=${version}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT, `body=${body}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT, `title=Version: ${version}\n`);
-
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: ReBypass.user.js
-        path: ReBypass.user.js
-
-    - name: Update release with changelog
-      if: github.event_name == 'release'
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const body = `${{ steps.release_info.outputs.body }}`;
-          const releaseId = context.payload.release.id;
-          github.rest.repos.updateRelease({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            release_id: releaseId,
-            name: `${{ steps.release_info.outputs.title }}`,
-            body: body
-          });
-
-    - name: Upload to release
-      if: github.event_name == 'release'
-      uses: actions/upload-release-asset@v1
+        files: ReBypass.user.js
+        body: ${{ steps.changelog.outputs.body }}
+        generate_release_notes: true
+        draft: false
+        prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./ReBypass.user.js
-        asset_name: ReBypass.user.js
-        asset_content_type: application/javascript
