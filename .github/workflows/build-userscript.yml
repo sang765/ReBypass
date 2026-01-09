@@ -23,19 +23,62 @@ jobs:
     - name: Build userscript
       run: bun run build
 
-    - name: Generate Release Changelog
+    - name: Get Date
+      id: date
+      run: echo "date=$(date +'%Y/%m/%d')" >> $GITHUB_OUTPUT
+
+    - name: Generate Changelog
       id: changelog
       run: |
-        date=$(date +'%Y/%m/%d')
-        body="Release ReBypass artifact, generated on ${date}"
-        echo "body=${body}" >> $GITHUB_OUTPUT
+        CURRENT_TAG=${{ github.ref_name }}
+        # Find the most recent tag before the current one
+        # If this is the first tag, PREVIOUS_TAG will be empty
+        PREVIOUS_TAG=$(git describe --tags --abbrev=0 --exclude="$CURRENT_TAG" 2>/dev/null || echo "")
+
+        echo "Current Tag: $CURRENT_TAG"
+        echo "Previous Tag: $PREVIOUS_TAG"
+
+        if [ -z "$PREVIOUS_TAG" ]; then
+          echo "No previous tag found. Getting all logs."
+          CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
+        else
+          echo "Getting logs between $PREVIOUS_TAG and $CURRENT_TAG"
+          CHANGELOG=$(git log --pretty=format:"- %s (%h)" "$PREVIOUS_TAG..$CURRENT_TAG" --no-merges)
+        fi
+
+        # Escape for GITHUB_OUTPUT
+        echo "changelog<<EOF" >> $GITHUB_OUTPUT
+        echo "$CHANGELOG" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+
+    - name: Fetch Contributors
+      id: contributors
+      uses: actions/github-script@v7
+      with:
+        result-encoding: string
+        script: |
+          const { data: contributors } = await github.rest.repos.listContributors({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            per_page: 50
+          });
+          const login = context.payload.release.author.login;
+          const contributorLogins = contributors
+            .filter(c => c.login !== login)
+            .map(c => `- ${c.login}`)
+            .join('\n');
+          return contributorLogins;
 
     - name: Create Release
       uses: softprops/action-gh-release@v2.5.0
       with:
         files: ReBypass.user.js
-        body: ${{ steps.changelog.outputs.body }}
-        generate_release_notes: true
+        body: |
+          Release **ReBypass** artifact, generated on **${{ steps.date.outputs.date }}**
+
+          ## Changelog
+
+          ${{ steps.changelog.outputs.changelog }}
         draft: false
         prerelease: false
       env:
