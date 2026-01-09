@@ -67,10 +67,10 @@ jobs:
 
         if [ -z "$PREVIOUS_TAG" ]; then
           echo "No previous tag found. Getting all logs."
-          CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
+          CHANGELOG=$(git log --pretty=format:"- (%h): **\"%s\"** by **@%an**" --no-merges)
         else
           echo "Getting logs between $PREVIOUS_TAG and $CURRENT_TAG"
-          CHANGELOG=$(git log --pretty=format:"- %s (%h)" "$PREVIOUS_TAG..$CURRENT_TAG" --no-merges)
+          CHANGELOG=$(git log --pretty=format:"- (%h): **\"%s\"** by **@%an**" "$PREVIOUS_TAG..$CURRENT_TAG" --no-merges)
         fi
 
         # Escape for GITHUB_OUTPUT
