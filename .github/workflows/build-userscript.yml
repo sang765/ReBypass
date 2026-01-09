@@ -9,19 +9,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout code & Install Bun
       uses: actions/checkout@v4
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
+      uses: oven-sh/setup-bun@v2
 
     - name: Install dependencies
-      run: npm install
+      run: bun install
 
     - name: Build userscript
-      run: npm run build
+      run: bun run build
 
     - name: Generate release info
       id: release_info
