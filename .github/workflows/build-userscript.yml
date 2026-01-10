@@ -1,13 +1,15 @@
 name: Build Userscript
 
 on:
-  push:
+  pull_request:
+    types: [closed]
     paths:
       - 'package.json'
 
 jobs:
   release-build:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
     permissions:
       contents: write
 
