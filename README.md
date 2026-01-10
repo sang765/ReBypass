@@ -9,6 +9,7 @@
 ![GitHub forks](https://img.shields.io/github/forks/sang765/ReBypass?style=for-the-badge&logo=github)
 ![GitHub issues](https://img.shields.io/github/issues/sang765/ReBypass?style=for-the-badge&logo=github)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/sang765/ReBypass?style=for-the-badge&logo=github)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/sang765/ReBypass/build-userscript.yml?style=for-the-badge&logo=githubactions&logoColor=ffffff)  
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
 ![npm](https://img.shields.io/badge/npm-%23000000.svg?style=for-the-badge&logo=npm&logoColor=white)
 ![Bun](https://img.shields.io/badge/Bun-%23000000.svg?style=for-the-badge&logo=bun&logoColor=white)
@@ -42,7 +43,8 @@ Additional disclaimer applies if bypass failures are related to the bypass.vip A
    - [Greasemonkey](https://www.greasespot.net/) (for Firefox)
    - [Violentmonkey](https://violentmonkey.github.io/) (alternative option)
 
-2. Install directly from the latest release: [Install Script](https://github.com/sang765/ReBypass/releases/latest/download/ReBypass.user.js)
+1. Click badge below to install the userscript:  
+[![Click to install](https://img.shields.io/badge/Install-Userscript-orange?style=for-the-badge&logo=javascript&logoColor=ffffff)](https://github.com/sang765/ReBypass/releases/latest/download/ReBypass.user.js)
 
 > [!WARNING]
 > - **Do not** install userscript from release because update not work because install from that is you install static version of userscript.
