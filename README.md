@@ -90,6 +90,9 @@ You can customize the script behavior by editing the `config` object at the top 
 - `time`: Wait time in seconds (default: 10)
 - `key`: API key if required (default: '')
 - `safeMode`: Enable safe mode for redirects (default: true)
+- `advancedMode`: Advanced wait time mode (default: true)
+- `clientSideWorkink`: Allow bypass work.ink client side. Original by **F.E.A.R** (default: false)
+- `clientSideLootlabs`: Allow bypass LootLabs client side. Original by **F.E.A.R** (default: false)
 
 ## Contributing
 
