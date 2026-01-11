@@ -1,13 +1,4 @@
 class ClientSideBypass {
-    static networkRequestCount = 0;
-
-    static updateNetworkCounter() {
-        const counter = document.getElementById('network-count');
-        if (counter) {
-            counter.textContent = this.networkRequestCount;
-        }
-    }
-
     static async handleWorkinkClientSide() {
         if (typeof unsafeWindow === 'undefined') return false;
 
@@ -21,8 +12,6 @@ class ClientSideBypass {
             let wsCount = 0;
             let requestCount = 0;
             let overlayCreated = false;
-            this.networkRequestCount = 0;
-            this.updateNetworkCounter();
 
             function createFEAROverlay() {
                 if (overlayCreated) return;
@@ -82,7 +71,7 @@ class ClientSideBypass {
                 t.appendChild(r);
 
                 const s = document.createElement("p");
-                s.innerHTML = 'Server requests done: <span id="wkest-count">0/3 (approx)</span><br>Network requests: <span id="network-count">0</span>';
+                s.innerHTML = 'Server requests done: <span id="wkest-count">0/3 (approx)</span>';
                 s.style.fontSize = "1.2em";
                 s.style.lineHeight = "1.8";
                 s.style.maxWidth = "800px";
@@ -189,9 +178,6 @@ class ClientSideBypass {
                                 headers: { Accept: "application/json" }
                             });
 
-                            this.networkRequestCount++;
-                            this.updateNetworkCounter();
-
                             if (!response.ok) return;
 
                             requestCount++;
@@ -266,8 +252,6 @@ class ClientSideBypass {
             let overlayCreated = false;
             let requestCount = 0;
             let zIndexInterval = null;
-            this.networkRequestCount = 0;
-            this.updateNetworkCounter();
 
             function createFEAROverlay() {
                 if (overlayCreated) return;
@@ -317,7 +301,7 @@ class ClientSideBypass {
                 t.appendChild(o);
 
                 const s = document.createElement("p");
-                s.innerHTML = 'Server requests done: <span id="wkest-count">0/6</span><br>Network requests: <span id="network-count">0</span>';
+                s.innerHTML = 'Server requests done: <span id="wkest-count">0/6</span>';
                 s.style.fontSize = "1.2em";
                 s.style.lineHeight = "1.8";
                 s.style.maxWidth = "800px";
@@ -396,10 +380,7 @@ class ClientSideBypass {
                                 setInterval(() => {
                                     u.send("PG0");
                                     console.log("[ClientSideBypass]: PG0");
-                                    fetch("https://trw.lat/api/status?op=llbs").then(() => {
-                                        this.networkRequestCount++;
-                                        this.updateNetworkCounter();
-                                    });
+                                    fetch("https://trw.lat/api/status?op=llbs");
                                     requestCount++;
                                     updateWKestCount();
                                 }, 10000);
@@ -408,21 +389,13 @@ class ClientSideBypass {
                                 if (console.log("[ClientSideBypass]: MEOB", e.data), e.data.startsWith("r:")) {
                                     const t = e.data.replace("r:", "").trim().replace(/[^ -~]/g, "");
                                     const n = await fetch(`https://trw.lat/api/clientSides/lootlabs?payl=${encodeURIComponent(t)}&pal=${encodeURIComponent(location.href)}`);
-                                    this.networkRequestCount++;
-                                    this.updateNetworkCounter();
                                     showRedirectButton((await n.json()).pyl);
                                     u.close();
                                 }
                             };
                             navigator.sendBeacon(`https://${i}.${c}/st?uid=${e}&cat=${t}`);
-                            fetch(o).then(() => {
-                                this.networkRequestCount++;
-                                this.updateNetworkCounter();
-                            });
-                            fetch(`https://${a}/td?ac=auto_complete&urid=${e}&cat=${t}&tid=${l}`).then(() => {
-                                this.networkRequestCount++;
-                                this.updateNetworkCounter();
-                            });
+                            fetch(o);
+                            fetch(`https://${a}/td?ac=auto_complete&urid=${e}&cat=${t}&tid=${l}`);
                         }
                         return t;
                     } catch (t) {
