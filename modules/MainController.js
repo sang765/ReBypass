@@ -13,6 +13,16 @@ function showError(message) {
     console.error('Userscript error:', message);
 }
 
+function isClientSideBypassEnabled(domain, cfg) {
+    if (ClientSideBypass.isWorkinkDomain(domain) && cfg.clientSideWorkink) {
+        return 'workink';
+    }
+    if (ClientSideBypass.isLootlabsDomain(domain) && cfg.clientSideLootlabs) {
+        return 'lootlabs';
+    }
+    return false;
+}
+
 function showStartingNotification() {
     UIManager.showBypassToast();
 }
@@ -59,6 +69,13 @@ class MainController {
             return;
         }
 
+        // Check for client-side bypass
+        const clientSideType = isClientSideBypassEnabled(currentDomain, cfg);
+        if (clientSideType) {
+            this.handleClientSideBypass(clientSideType);
+            return;
+        }
+
         // Only ask for bypass confirmation when there's no redirect parameter
         if (cfg.askMode && !rawRedirect) {
             const confirmBypass = confirm('ReBypass: Hey, do you want to bypass this link?');
@@ -79,7 +96,7 @@ class MainController {
 
         if (!rawRedirect) {
             showStartingNotification();
-            const delay = 800; // Fixed delay without stealth mode
+            const delay = 800;
             setTimeout(() => {
                 const targetUrl = `https://bypass.vip/userscript?url=${encodeURIComponent(location.href)}&time=${waitTime}&key=${cfg.key}&safe=${cfg.safeMode}&rnd=${Math.random().toString(36).substr(2, 9)}`;
                 location.replace(targetUrl);
@@ -181,6 +198,8 @@ class MainController {
             timeInput.value = cfg.globalTime;
             keyInput.value = cfg.key;
             askModeInput.checked = cfg.askMode;
+            document.getElementById(clientSideWorkinkInputId).checked = cfg.clientSideWorkink;
+            document.getElementById(clientSideLootlabsInputId).checked = cfg.clientSideLootlabs;
 
             // Set initial values for advanced time inputs
             for (const cat of Object.keys(wt)) {
@@ -194,6 +213,8 @@ class MainController {
                 const globalTime = parseInt(document.getElementById(timeInputId).value);
                 const key = document.getElementById(keyInputId).value;
                 const askMode = document.getElementById(askModeInputId).checked;
+                const clientSideWorkink = document.getElementById(clientSideWorkinkInputId).checked;
+                const clientSideLootlabs = document.getElementById(clientSideLootlabsInputId).checked;
                 const waitTimesNew = {};
                 for (const cat of Object.keys(wt)) {
                     const val = parseInt(document.getElementById(timeIdMap[cat]).value);
@@ -203,6 +224,8 @@ class MainController {
                 ConfigManager.setValue('globalTime', globalTime);
                 ConfigManager.setValue('key', key);
                 ConfigManager.setValue('askMode', askMode);
+                ConfigManager.setValue('clientSideWorkink', clientSideWorkink);
+                ConfigManager.setValue('clientSideLootlabs', clientSideLootlabs);
                 ConfigManager.setValue('waitTimes', waitTimesNew);
 
                 // Update local config variables to reflect changes immediately
@@ -210,6 +233,8 @@ class MainController {
                 cfg.globalTime = globalTime;
                 cfg.key = key;
                 cfg.askMode = askMode;
+                cfg.clientSideWorkink = clientSideWorkink;
+                cfg.clientSideLootlabs = clientSideLootlabs;
                 wt = waitTimesNew;
 
                 settingsDropdown.style.display = 'none';
@@ -301,7 +326,7 @@ class MainController {
 
             // Prevent all pointer events from passing through to the underlying page
             const preventEventPropagation = (e) => {
-                const interactiveIds = [nextBtnId, cancelBtnId, settingsBtnId, themeToggleBtnId, saveSettingsId, advancedModeInputId, timeInputId, keyInputId, askModeInputId, eyesBtnId, ...Object.values(timeIdMap)];
+                const interactiveIds = [nextBtnId, cancelBtnId, settingsBtnId, themeToggleBtnId, saveSettingsId, advancedModeInputId, timeInputId, keyInputId, askModeInputId, clientSideWorkinkInputId, clientSideLootlabsInputId, eyesBtnId, ...Object.values(timeIdMap)];
                 if (e.target && interactiveIds.includes(e.target.id)) return;
                 e.preventDefault();
                 e.stopPropagation();
@@ -318,6 +343,21 @@ class MainController {
                 newBtn.setAttribute('aria-label', 'Proceed to link');
                 newBtn.tabIndex = 0;
             } catch (err) { /* silent */ }
+        }
+    }
+
+    static async handleClientSideBypass(type) {
+        showStartingNotification();
+
+        try {
+            if (type === 'workink') {
+                await ClientSideBypass.handleWorkinkClientSide();
+            } else if (type === 'lootlabs') {
+                await ClientSideBypass.handleLootlabsClientSide();
+            }
+        } catch (error) {
+            console.error('Client-side bypass failed:', error);
+            showError('Client-side bypass failed: ' + error.message);
         }
     }
 }
