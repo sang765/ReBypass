@@ -96,7 +96,7 @@ class MainController {
 
         if (!rawRedirect) {
             showStartingNotification();
-            const delay = 800; // Fixed delay without stealth mode
+            const delay = 800;
             setTimeout(() => {
                 const targetUrl = `https://bypass.vip/userscript?url=${encodeURIComponent(location.href)}&time=${waitTime}&key=${cfg.key}&safe=${cfg.safeMode}&rnd=${Math.random().toString(36).substr(2, 9)}`;
                 location.replace(targetUrl);

@@ -44,7 +44,7 @@ class ClientSideBypass {
                 });
 
                 const o = document.createElement("h1");
-                o.textContent = "F.E.A.R: Bypass";
+                o.textContent = "F.E.A.R";
                 o.style.fontSize = "5em";
                 o.style.margin = "0 0 10px 0";
                 o.style.letterSpacing = "8px";
@@ -52,7 +52,7 @@ class ClientSideBypass {
                 t.appendChild(o);
 
                 const n = document.createElement("h2");
-                n.textContent = "Bypassing work.ink client-side";
+                n.textContent = "Forcefully Eliminating Advertising Redirects";
                 n.style.fontSize = "1.4em";
                 n.style.margin = "0 0 40px 0";
                 n.style.opacity = "0.7";
@@ -60,7 +60,7 @@ class ClientSideBypass {
                 t.appendChild(n);
 
                 const r = document.createElement("p");
-                r.innerHTML = 'This bypass takes time but avoids IP detection.<br><br>Just wait, it shouldn\'t take more than 2-3 minutes.';
+                r.innerHTML = 'Bypassing work.ink client-side<br><br>This bypass takes time but avoids IP detection.<br><br>Just wait, it shouldn\'t take more than 2-3 minutes.';
                 r.style.fontSize = "0.85em";
                 r.style.lineHeight = "1.6";
                 r.style.maxWidth = "800px";
@@ -285,7 +285,7 @@ class ClientSideBypass {
                 });
 
                 const n = document.createElement("h1");
-                n.textContent = "F.E.A.R: Bypass";
+                n.textContent = "F.E.A.R";
                 n.style.fontSize = "5em";
                 n.style.margin = "0 0 10px 0";
                 n.style.letterSpacing = "8px";
@@ -293,7 +293,7 @@ class ClientSideBypass {
                 t.appendChild(n);
 
                 const o = document.createElement("h2");
-                o.textContent = "Bypassing loot-links client-side";
+                o.textContent = "Forcefully Eliminating Advertising Redirects";
                 o.style.fontSize = "1.4em";
                 o.style.margin = "0 0 40px 0";
                 o.style.opacity = "0.7";
