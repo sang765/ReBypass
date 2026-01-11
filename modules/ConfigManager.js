@@ -114,7 +114,9 @@ class ConfigManager {
             globalTime: this.getValueAndSetIfMissing('globalTime', 25),
             key: this.getValueAndSetIfMissing('key', ''),
             safeMode: this.getValueAndSetIfMissing('safeMode', true),
-            askMode: this.getValueAndSetIfMissing('askMode', true)
+            askMode: this.getValueAndSetIfMissing('askMode', true),
+            clientSideWorkink: this.getValueAndSetIfMissing('clientSideWorkink', false),
+            clientSideLootlabs: this.getValueAndSetIfMissing('clientSideLootlabs', false)
         };
     }
 
