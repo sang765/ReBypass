@@ -1,13 +1,32 @@
-const https = require('https');
-const fs = require('fs');
-const path = require('path');
+import { get } from 'https';
+import { readFileSync, writeFileSync } from 'fs';
+import { join } from 'path';
 
 const URL = 'https://raw.githubusercontent.com/bypass-vip/userscript/main/bypass-vip.user.js';
-const JSON_FILE = path.join(__dirname, 'metadata.json');
+const JSON_FILE = join(__dirname, 'metadata.json');
 
-function fetchUserscript() {
+interface Metadata {
+    name: string;
+    namespace: string;
+    version: string;
+    author: string;
+    description: string;
+    grants: string[];
+    excludes: string[];
+    matches: string[];
+    custom_matches: string[];
+    requires?: string[];
+    downloadURL: string;
+    updateURL: string;
+    source: string;
+    icon: string;
+    "run-at": string;
+    tag: string;
+}
+
+function fetchUserscript(): Promise<string> {
     return new Promise((resolve, reject) => {
-        https.get(URL, (res) => {
+        get(URL, (res) => {
             let data = '';
             res.on('data', (chunk) => data += chunk);
             res.on('end', () => resolve(data));
@@ -15,8 +34,8 @@ function fetchUserscript() {
     });
 }
 
-function extractMatches(content) {
-    const matches = [];
+function extractMatches(content: string): string[] {
+    const matches: string[] = [];
     const lines = content.split('\n');
     for (const line of lines) {
         const match = line.match(/^\/\/ @match\s+(.+)$/);
@@ -27,8 +46,8 @@ function extractMatches(content) {
     return matches;
 }
 
-function extractDomains(matches) {
-    const domains = [];
+function extractDomains(matches: string[]): string[] {
+    const domains: string[] = [];
     for (const match of matches) {
         const domainMatch = match.match(/:\/\/([^\/]+)/);
         if (domainMatch) {
@@ -45,7 +64,7 @@ async function main() {
     const hasExport = args.includes('--export');
 
     if (!hasSync && !hasPrint && !hasExport) {
-        console.log('Usage: node sync-matches.js [--sync] [--print] [--export]');
+        console.log('Usage: node sync-matches.ts [--sync] [--print] [--export]');
         console.log('--sync: Update metadata.json with match patterns');
         console.log('--print: Print match patterns to terminal');
         console.log('--export: Export domains without * to terminal');
@@ -75,17 +94,17 @@ async function main() {
         if (hasSync) {
             // Read current JSON
             const jsonPath = JSON_FILE;
-            const jsonData = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+            const jsonData: Metadata = JSON.parse(readFileSync(jsonPath, 'utf8'));
 
             // Update matches
             jsonData.matches = matches;
 
             // Write back
-            fs.writeFileSync(jsonPath, JSON.stringify(jsonData, null, 2));
+            writeFileSync(jsonPath, JSON.stringify(jsonData, null, 2));
             console.log('Updated metadata.json with new match patterns.');
         }
     } catch (error) {
-        console.error('Error:', error.message);
+        console.error('Error:', (error as Error).message);
         process.exit(1);
     }
 }

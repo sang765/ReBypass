@@ -1,11 +1,33 @@
-const fs = require('fs');
-const path = require('path');
+import { readFileSync, writeFileSync } from 'fs';
+
+interface Metadata {
+    name: string;
+    namespace: string;
+    version: string;
+    author: string;
+    description: string;
+    grants: string[];
+    excludes: string[];
+    matches: string[];
+    custom_matches: string[];
+    requires?: string[];
+    downloadURL: string;
+    updateURL: string;
+    source: string;
+    icon: string;
+    "run-at": string;
+    tag: string;
+}
+
+interface PackageJson {
+    version: string;
+}
 
 // Read package.json for version
-const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+const packageJson: PackageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 
 // Read metadata from scripts/metadata.json
-const info = JSON.parse(fs.readFileSync('scripts/metadata.json', 'utf8'));
+const info: Metadata = JSON.parse(readFileSync('scripts/metadata.json', 'utf8'));
 let metadata = '// ==UserScript==\n';
 metadata += `// @name          ${info.name}\n`;
 metadata += `// @namespace     ${info.namespace}\n`;
@@ -49,7 +71,7 @@ const modules = [
 let bundled = metadata;
 
 modules.forEach(modulePath => {
-    const content = fs.readFileSync(modulePath, 'utf8');
+    const content = readFileSync(modulePath, 'utf8');
     // Remove export/import statements
     let cleaned = content
         .replace(/if \(typeof module !== 'undefined' && module.exports\) \{[\s\S]*?\}/g, '')
@@ -76,11 +98,11 @@ bundled += `
 `;
 
 // Create package file
-fs.writeFileSync('ReBypass.user.js', bundled);
+writeFileSync('ReBypass.user.js', bundled);
 console.log('Build completed!');
 
 // Clean matches (remove regular matches but keep custom matches)
 info.matches = [];
 info.version = "";
-fs.writeFileSync('scripts/metadata.json', JSON.stringify(info, null, 2));
+writeFileSync('scripts/metadata.json', JSON.stringify(info, null, 2));
 console.log('Cleaned match patterns from metadata.json');

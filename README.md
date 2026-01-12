@@ -10,6 +10,7 @@
 ![GitHub issues](https://img.shields.io/github/issues/sang765/ReBypass?style=for-the-badge&logo=github)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/sang765/ReBypass?style=for-the-badge&logo=github)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/sang765/ReBypass/build-userscript.yml?style=for-the-badge&logo=githubactions&logoColor=ffffff)  
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
 ![npm](https://img.shields.io/badge/npm-%23000000.svg?style=for-the-badge&logo=npm&logoColor=white)
 ![Bun](https://img.shields.io/badge/Bun-%23000000.svg?style=for-the-badge&logo=bun&logoColor=white)
