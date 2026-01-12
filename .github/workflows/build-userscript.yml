@@ -132,7 +132,7 @@ jobs:
           > **Remember that**
           > - Installing this version means it will **not be updated** version, so please consider carefully before installing.
 
-          [![Install Current Version](https://img.shields.io/badge/Current-v${{ steps.version.outputs.version }}-darkred?style=for-the-badge&logo=javascript&logoColor=Yellow)](https://github.com/sang765/ReBypass/releases/${{ steps.version.outputs.version }}/download/ReBypass-No-Update.user.js)
+          [![Install Current Version](https://img.shields.io/badge/Current-v${{ steps.version.outputs.version }}-darkred?style=for-the-badge&logo=javascript&logoColor=Yellow)](https://github.com/sang765/ReBypass/releases/download/${{ steps.version.outputs.version }}/ReBypass-No-Update.user.js)
         draft: false
         prerelease: false
       env:
