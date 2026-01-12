@@ -23,13 +23,18 @@ interface PackageJson {
     version: string;
 }
 
+// Check for no-update flag
+const isNoUpdate = process.argv.includes('no-update');
+
 // Read package.json for version
 const packageJson: PackageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 
 // Read metadata from scripts/metadata.json
 const info: Metadata = JSON.parse(readFileSync('scripts/metadata.json', 'utf8'));
+
 let metadata = '// ==UserScript==\n';
-metadata += `// @name          ${info.name}\n`;
+const scriptName = isNoUpdate ? `RB ${packageJson.version} (NO-UPDATE)` : info.name;
+metadata += `// @name          ${scriptName}\n`;
 metadata += `// @namespace     ${info.namespace}\n`;
 metadata += `// @version       ${packageJson.version}\n`;
 metadata += `// @author        ${info.author}\n`;
@@ -46,8 +51,11 @@ for (let customMatch of info.custom_matches) {
 for (let exclude of info.excludes) {
     metadata += `// @exclude       ${exclude}\n`;
 }
-metadata += `// @downloadURL   ${info.downloadURL}\n`;
-metadata += `// @updateURL     ${info.updateURL}\n`;
+// Only add downloadURL and updateURL if not no-update
+if (!isNoUpdate) {
+    metadata += `// @downloadURL   ${info.downloadURL}\n`;
+    metadata += `// @updateURL     ${info.updateURL}\n`;
+}
 metadata += `// @source   ${info.source}\n`;
 metadata += `// @icon          ${info.icon}\n`;
 metadata += `// @run-at        ${info["run-at"]}\n`;
@@ -98,11 +106,13 @@ bundled += `
 `;
 
 // Create package file
-writeFileSync('ReBypass.user.js', bundled);
+const outputFile = isNoUpdate ? 'ReBypass-No-Update.user.js' : 'ReBypass.user.js';
+writeFileSync(outputFile, bundled);
 console.log('Build completed!');
 
 // Clean matches (remove regular matches but keep custom matches)
 info.matches = [];
 info.version = "";
+info.name = "ReBypass"; // Reset name to original
 writeFileSync('scripts/metadata.json', JSON.stringify(info, null, 2));
 console.log('Cleaned match patterns from metadata.json');

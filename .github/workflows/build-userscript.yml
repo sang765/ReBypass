@@ -1,4 +1,4 @@
-name: Build Userscript
+name: Build Userscript Release
 
 on:
   pull_request:
