@@ -4,7 +4,8 @@
   "description": "Build script for ReBypass userscript",
   "main": "build.js",
   "scripts": {
-    "build": "bun scripts/sync-matches.js --sync && bun build.js"
+    "build": "bun scripts/sync-matches.js --sync && bun build.js",
+    "sync-userscripts": "bun scripts/sync-userscripts.ts"
   },
   "dependencies": {
     "@playwright/test": "^1.57.0",
