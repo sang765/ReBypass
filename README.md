@@ -101,6 +101,8 @@ Contributions are welcome! Please fork the repository and submit a pull request.
 
 ## License
 
+[![MIT License](https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/i/7195e121-eded-45cf-9aab-909deebd81b2/d9ur2lg-28410b47-58fd-4a48-9b67-49c0f56c68ce.png)](LICENSE)
+
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Author
