@@ -1,4 +1,4 @@
-name: Build Userscript
+name: Build Userscript Release
 
 on:
   pull_request:
@@ -28,9 +28,16 @@ jobs:
     - name: Build userscript
       run: bun run build
 
+    - name: Build no-update userscript
+      run: bun run build:no-update
+
     - name: Get Date
       id: date
       run: echo "date=$(date +'%Y/%m/%d')" >> $GITHUB_OUTPUT
+
+    - name: Get Time
+      id: time
+      run: echo "time=$(date +'%I:%M:%S %p')" >> $GITHUB_OUTPUT
 
     - name: Get Version
       id: version
@@ -102,14 +109,30 @@ jobs:
       if: steps.tag_exists.outputs.exists == 'false'
       uses: softprops/action-gh-release@v2.5.0
       with:
-        files: ReBypass.user.js
+        files: |
+          ReBypass.user.js
+          ReBypass-No-Update.user.js
         tag_name: ${{ steps.version.outputs.version }}
         body: |
-          Release **ReBypass** artifact, generated on **${{ steps.date.outputs.date }}**
+          Release **ReBypass** artifact, generated on **${{ steps.date.outputs.date }} - ${{ steps.time.outputs.time }}**
 
           ## Changelog
 
           ${{ steps.changelog.outputs.changelog }}
+
+          ## Install Userscript
+
+          ### Latest Version:
+
+          [![Install Latest Version](https://img.shields.io/github/v/release/sang765/ReBypass?display_name=release&style=for-the-badge&logo=javascript&logoColor=yellow&label=Latest&color=light%20green)](https://github.com/sang765/ReBypass/releases/latest/download/ReBypass.user.js)
+
+          ### Current Version:
+
+          > [!WARNING]
+          > **Remember that**
+          > - Installing this version means it will **not be updated** version, so please consider carefully before installing.
+
+          [![Install Current Version](https://img.shields.io/badge/Current-v${{ steps.version.outputs.version }}-darkred?style=for-the-badge&logo=javascript&logoColor=Yellow)](https://github.com/sang765/ReBypass/releases/${{ steps.version.outputs.version }}/download/ReBypass-No-Update.user.js)
         draft: false
         prerelease: false
       env:

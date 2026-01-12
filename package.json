@@ -1,10 +1,11 @@
 {
   "name": "rebypass-build",
-  "version": "1.8.8",
+  "version": "1.8.9",
   "description": "Build script for ReBypass userscript",
   "main": "build.ts",
   "scripts": {
     "build": "bun scripts/sync-matches.ts --sync && bun build.ts",
+    "build:no-update": "bun scripts/sync-matches.ts --sync && bun build.ts no-update",
     "sync-userscripts": "bun scripts/sync-userscripts.ts"
   },
   "dependencies": {
