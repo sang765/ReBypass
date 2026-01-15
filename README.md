@@ -14,6 +14,7 @@
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
 ![npm](https://img.shields.io/badge/npm-%23000000.svg?style=for-the-badge&logo=npm&logoColor=white)
 ![Bun](https://img.shields.io/badge/Bun-%23000000.svg?style=for-the-badge&logo=bun&logoColor=white)
+[![Telegram Group](https://img.shields.io/badge/Telegram-Group-blue?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/ByteHavenPro)
 
 </div>
 

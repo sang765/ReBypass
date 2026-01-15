@@ -1,6 +1,6 @@
 {
   "name": "rebypass-build",
-  "version": "1.8.9",
+  "version": "1.9.0",
   "description": "Build script for ReBypass userscript",
   "main": "build.ts",
   "scripts": {
@@ -9,6 +9,7 @@
     "sync-userscripts": "bun scripts/sync-userscripts.ts"
   },
   "dependencies": {
+    "@genkit-ai/mcp": "^1.27.0",
     "@playwright/test": "^1.57.0",
     "badge-maker": "^5.0.2",
     "puppeteer": "^24.34.0"
