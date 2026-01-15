@@ -5,6 +5,11 @@ on:
     types: [closed]
     paths:
       - 'package.json'
+  push:
+    branches:
+      - main
+    paths:
+      - 'package.json'
 
 jobs:
   release-build:
