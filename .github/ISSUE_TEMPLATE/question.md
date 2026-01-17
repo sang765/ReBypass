@@ -1,9 +1,9 @@
 ---
-name: Question/Help
+name: ❓ Question/Help
 about: Ask a question or request help
 title: '[QUESTION] '
 labels: Question, Help Wanted
-assignees: ''
+assignees: '@me'
 ---
 
 ## Question/Help
