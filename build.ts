@@ -69,6 +69,8 @@ metadata += '// ==/UserScript==\n';
 const modules = [
     'modules/ConfigManager.js',
     'modules/Utils.js',
+    'modules/i18n.js',
+    'modules/translations.js',
     'modules/UIManager.js',
     'modules/ErrorHandler.js',
     'modules/EventManager.js',

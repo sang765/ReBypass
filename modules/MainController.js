@@ -5,9 +5,9 @@ function showError(message) {
     if (document.body) {
         document.body.innerHTML = `
             <div style="color: #ff4d4d; text-align: center; padding: 40px; background: #121212; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: sans-serif;">
-                <h2 style="margin-bottom:10px;">Bypass Script Error</h2>
+                <h2 style="margin-bottom:10px;">${i18n.t('errors.bypassScriptError')}</h2>
                 <p style="font-size: 1.1em; background: #1e1e1e; padding: 15px; border-radius: 8px; border: 1px solid #333;">${message}</p>
-                <button onclick="location.reload()" style="margin-top:20px; padding:10px 20px; background:#1E88E5; color:white; border:none; border-radius:5px; cursor:pointer;">Reload Page</button>
+                <button onclick="location.reload()" style="margin-top:20px; padding:10px 20px; background:#1E88E5; color:white; border:none; border-radius:5px; cursor:pointer;">${i18n.t('errors.reloadPage')}</button>
             </div>`;
     }
     console.error('Userscript error:', message);
@@ -38,6 +38,9 @@ function isValidUrl(url) {
 
 class MainController {
     static async init() {
+        // Initialize i18n first
+        i18n.init();
+
         await ConfigManager.loadClassifications();
 
         // Menu commands for settings
@@ -78,7 +81,7 @@ class MainController {
 
         // Only ask for bypass confirmation when there's no redirect parameter
         if (cfg.askMode && !rawRedirect) {
-            const confirmBypass = confirm('ReBypass: Hey, do you want to bypass this link?');
+            const confirmBypass = confirm(i18n.t('ui.proceed') + '?');
             if (!confirmBypass) {
                 return;
             }
@@ -206,6 +209,17 @@ class MainController {
                 const input = document.getElementById(timeIdMap[cat]);
                 input.value = wt[cat];
             }
+
+            // Language selector
+            const languageSelect = container.querySelector('#languageSelectId');
+            const currentLang = i18n.getCurrentLanguage();
+            languageSelect.value = currentLang;
+            languageSelect.addEventListener('change', (e) => {
+                i18n.setLanguage(e.target.value);
+                // Reload page to apply new language
+                alert(i18n.t('ui.languageChanged'));
+                location.reload();
+            });
 
             const saveSettings = container.querySelector(`#${saveSettingsId}`);
             const saveFunction = () => {

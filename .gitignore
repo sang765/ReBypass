@@ -3,5 +3,5 @@ node_modules
 *.user.js
 package-lock.json
 firebase-debug*
-bun.lockb
+bun.lock
 output
