@@ -1,9 +1,9 @@
 ---
-name: Bug Report
+name: 🐞 Bug Report
 about: Report a bug to help us improve
 title: '[BUG] '
 labels: Bug
-assignees: ''
+assignees: '@me'
 ---
 
 # Bug Report
