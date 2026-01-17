@@ -172,7 +172,7 @@ class UIManager {
                         ${i18n.t('settings.apiKey')} <input id="${keyInputId}" type="text" style="width: 100%; padding: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;">
                     </label>
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; color: var(--text-color); cursor: pointer;">
-                        <label style="cursor: pointer;">Language:</label>
+                        <label style="cursor: pointer;">${i18n.t('settings.language')}</label>
                         <select id="languageSelectId" style="padding: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px; cursor: pointer;">
                             <option value="en">English</option>
                             <option value="vi">Tiếng Việt</option>
