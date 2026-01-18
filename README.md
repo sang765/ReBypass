@@ -28,15 +28,21 @@ This is a remake of the official userscript for [bypass.vip](https://bypass.vip)
 
 ## Disclaimer
 
-Additional disclaimer applies if bypass failures are related to the bypass.vip API and are detected by anti-bypass website.
+We disclaim responsibility for bypass failures related to third-party API errors **unrelated to** our repository and detected by anti-bypass.
 
 ## Features
 
-- Automatic bypass of ad-links on supported sites
-- Countdown timer for hash-based links to prevent expiration
-- Safe mode to ensure reliable redirects
-- Customizable wait time and API key support
-- Dark-themed overlay interface for better user experience
+**From [bypass.vip](https://github.com/bypass-vip/userscript):**
+- Support 180+ site.
+- Redirect GUI.  
+
+**From [F.E.A.R](https://trw.lat/install/userscript/u.user.js?v=latest):**
+- `WorkInk` and `LootLabs` client side bypass (A.K.A WebShocket) via config.  
+
+**From REBYPASS:**
+- Remake bypass.vip redirect GUI.
+- Top center notification.
+- Encrypt the GUI userscript to make it difficult for anti-bypass filters to detect.
 
 ## Installation
 
@@ -50,6 +56,10 @@ Additional disclaimer applies if bypass failures are related to the bypass.vip A
 
 > [!WARNING]
 > - **Do not** install userscript from release because update not work because install from that is you install static version of userscript.
+
+## Requirements:
+- **[Bun](https://bun.com/docs/installation)** latest version.
+  - You also can use NodeJS but slower than Bun
 
 ## Building the Userscript
 
