@@ -12,6 +12,11 @@ window.ReBypassTranslations = {
             captchaRequired: 'Please complete captcha first!'
         },
 
+        // GM_notification
+        gm: {
+            beforeBypass: 'REBYPASS: Hey, do you wanna bypass this link?'
+        },
+
         // UI Labels
         ui: {
             settings: '⚙️ Settings',
@@ -83,6 +88,11 @@ window.ReBypassTranslations = {
         toast: {
             startingBypass: 'BYPASS.VIP: ĐANG BẮT ĐẦU BYPASS...',
             captchaRequired: 'Vui lòng hoàn thành captcha trước!'
+        },
+
+        // GM_notification
+        gm: {
+            beforeBypass: 'Này, bạn có muốn bypass link này không?'
         },
 
         // Nhãn UI
