@@ -119,7 +119,7 @@ jobs:
           ReBypass-No-Update.user.js
         tag_name: ${{ steps.version.outputs.version }}
         body: |
-          Release **ReBypass** artifact, generated on **${{ steps.date.outputs.date }} - ${{ steps.time.outputs.time }}**
+          Release **ReBypass** artifact, generated on **${{ steps.date.outputs.date }} - ${{ steps.time.outputs.time }} (UTC +0)**
 
           ## Changelog
 
