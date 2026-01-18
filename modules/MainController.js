@@ -81,7 +81,7 @@ class MainController {
 
         // Only ask for bypass confirmation when there's no redirect parameter
         if (cfg.askMode && !rawRedirect) {
-            const confirmBypass = confirm(i18n.t('ui.proceed') + '?');
+            const confirmBypass = confirm(i18n.t('gm.beforeBypass') + '?');
             if (!confirmBypass) {
                 return;
             }
