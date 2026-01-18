@@ -64,26 +64,32 @@ jobs:
       run: |
         CURRENT_TAG="${{ steps.version.outputs.version }}"
 
-        # Get all tags sorted by version, excluding current tag
-        ALL_TAGS=$(git tag -l | grep -v "^${CURRENT_TAG}$" | sort -V | tail -n +1)
-
         # Get the most recent tag before current one
         PREVIOUS_TAG=$(git tag -l | grep -v "^${CURRENT_TAG}$" | sort -V | tail -n 1)
 
         echo "Current Tag: $CURRENT_TAG"
         echo "Previous Tag: $PREVIOUS_TAG"
 
+        echo "changelog<<EOF" >> $GITHUB_OUTPUT
         if [ -z "$PREVIOUS_TAG" ]; then
           echo "No previous tag found. Getting all logs."
-          CHANGELOG=$(git log --pretty=format:"- (%h): **\"%s\"** by **@%an**" --no-merges)
+          git log --pretty=format:"%H %s %ae" --no-merges | while IFS= read -r line; do
+            hash=$(echo "$line" | awk '{print $1}')
+            email=$(echo "$line" | awk '{print $NF}')
+            msg=$(echo "$line" | sed 's/^[^ ]* //' | sed 's/ [^ ]*$//')
+            username=$(echo "$email" | cut -d'@' -f1)
+            echo "- ($hash): **\"$msg\"** by **@$username**"
+          done
         else
           echo "Getting logs between $PREVIOUS_TAG and $CURRENT_TAG"
-          CHANGELOG=$(git log --pretty=format:"- (%h): **\"%s\"** by **@%an**" "$PREVIOUS_TAG..$CURRENT_TAG" --no-merges)
-        fi
-
-        # Escape for GITHUB_OUTPUT
-        echo "changelog<<EOF" >> $GITHUB_OUTPUT
-        echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          git log --pretty=format:"%H %s %ae" "$PREVIOUS_TAG..$CURRENT_TAG" --no-merges | while IFS= read -r line; do
+            hash=$(echo "$line" | awk '{print $1}')
+            email=$(echo "$line" | awk '{print $NF}')
+            msg=$(echo "$line" | sed 's/^[^ ]* //' | sed 's/ [^ ]*$//')
+            username=$(echo "$email" | cut -d'@' -f1)
+            echo "- ($hash): **\"$msg\"** by **@$username**"
+          done
+        fi >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
 
     - name: Fetch Contributors
