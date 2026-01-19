@@ -12,6 +12,11 @@
     "GM_registerMenuCommand"
   ],
   "excludes": [
+    "*://work.ink",
+    "*://r.work.ink",
+    "*://workink.net",
+    "*://workink.one",
+    "*://workink.me",
     "*://work.ink/token/*",
     "*://r.work.ink/token/*",
     "*://workink.net/token/*",
