@@ -3,8 +3,7 @@ import { join } from 'path';
 
 const urls = [
   'https://trw.lat/install/userscript/u.user.js?v=latest',
-  'https://raw.githubusercontent.com/bypass-vip/userscript/master/bypass-vip.user.js',
-  'https://codeberg.org/gongchandang49/bypass-all-shortlinks-debloated/raw/branch/main/Bypass_All_Shortlinks.user.js'
+  'https://raw.githubusercontent.com/bypass-vip/userscript/master/bypass-vip.user.js'
 ];
 
 const outputDir = 'output';
