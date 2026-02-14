@@ -8,7 +8,7 @@ const CONFIG = {
   LootLabs:true, // LootLabs Client-Side bypass
   WorkInk:true, // Work.ink Client-Side bypass
   // DO NOT CHANGE
-  UVersion:"V2.3.1",
+  UVersion:"V2.3.3",
   CS_Workink_HST : "https://workink-bypass.site"
 };
 
@@ -174,6 +174,200 @@ class ClientSideBypass {
             return true;
         }
         return false;
+    }
+
+    static generateRandomPath() {
+        return '/' + ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+            (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+        );
+    }
+
+    static async handleReferrerRedirect(ref) {
+        const dest = atob(ref);
+
+        history.replaceState(null, null, this.generateRandomPath());
+        setInterval(() => history.replaceState(null, null, this.generateRandomPath()), 1000 + Math.random() * 500);
+
+        document.documentElement.innerHTML = `<!DOCTYPE html><html><head><title>RIP.LINKVERTISE.LOL</title>` +
+            `<style>body{font-family:Arial,sans-serif;background:#1a1a1a;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;margin:0;color:#e0e0e0}h2{font-size:2.5em;margin-bottom:10px}p{font-size:1.2em;text-align:center;margin:5px 0}button{font-size:1.5em;padding:15px 30px;background:#333;color:#e0e0e0;border:none;border-radius:8px;cursor:pointer;transition:transform .2s,background .2s}button:hover{transform:scale(1.05);background:#4a4a4a}button:disabled{background:#555;color:#999;cursor:not-allowed}#countdown{font-size:1.3em;margin-bottom:10px}</style>` +
+            `</head><body><h2>F.E.A.R - Forcefully Eliminating Advertising Redirects</h2><p>Click the button below to proceed.</p>` +
+            `<div id="countdown"></div><button id="nextBtn">Next</button></body></html>`;
+
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                const countdownEl = document.getElementById('countdown');
+                const btn = document.getElementById('nextBtn');
+
+                btn.addEventListener('click', () => {
+                    if (!btn.disabled && dest) {
+                        window.location.href = dest;
+                    }
+                });
+
+                const hasHash = (url) => {
+                    try {
+                        return url.includes('hash=');
+                    } catch {
+                        return false;
+                    }
+                };
+
+                if (hasHash(dest)) {
+                    countdownEl.style.color = 'red';
+                    countdownEl.style.fontWeight = 'bold';
+                    let time = 8;
+                    countdownEl.textContent = `YOU HAVE EXACTLY ${time} SECONDS TO CLICK THE BUTTON BEFORE YOUR HASH EXPIRES`;
+                    const interval = setInterval(() => {
+                        time--;
+                        if (time > 0) {
+                            countdownEl.textContent = `YOU HAVE EXACTLY ${time} SECONDS TO CLICK THE BUTTON BEFORE YOUR HASH EXPIRES`;
+                        } else {
+                            countdownEl.textContent = `WELL DONE, NOW THE HASH IS INVALID AND IF YOU CLICK YOU WILL BE DETECTED, STARTING BYPASS AGAIN...`;
+                            countdownEl.style.color = '';
+                            countdownEl.style.fontWeight = '';
+                            btn.disabled = true;
+                            clearInterval(interval);
+                            setTimeout(() => {
+                                location.replace(location.href.split('?')[0]);
+                            }, 3500);
+                        }
+                    }, 1000);
+                } else {
+                    countdownEl.style.display = 'none';
+                }
+                resolve(true);
+            }, 100);
+        });
+    }
+
+    static async handleRipBypassFull() {
+        if (location.hostname === 'rip.linkvertise.lol' && location.pathname === '/bypass') {
+            const success = await this.findHref();
+            if (success) {
+                const p = new URLSearchParams(window.location.search);
+                const redirect = p.get('url');
+                const host = new URL(redirect).hostname;
+                await this.sleep(2000 + Math.random() * 1000);
+                const bypassUrl = `https://${host}/cdn-cgi/rum`;
+                if (typeof GM_setValue !== 'undefined') {
+                    GM_setValue(CONFIG.REFParamtr, btoa(success));
+                }
+                window.location.href = bypassUrl;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    static async handleTrwRedirectFull() {
+        if (location.href.includes('https://trw.lat/?url=')) {
+            await this.sleep(1500);
+            const info = document.getElementById('information');
+            if (info) info.click();
+
+            let timeLeft = CONFIG.SecureMode ? 10 : CONFIG.wait;
+            const h1 = document.querySelector("html body div.centered h1");
+            if (h1) {
+                h1.textContent = `Redirecting in ${timeLeft}s...`;
+                const countdown = setInterval(() => {
+                    timeLeft--;
+                    if (timeLeft <= 0) {
+                        clearInterval(countdown);
+                        h1.textContent = 'Redirecting now...';
+                    } else {
+                        h1.textContent = `Redirecting in ${timeLeft}s...`;
+                    }
+                }, 1000);
+            }
+
+            await this.sleep((CONFIG.SecureMode ? 10 : CONFIG.wait) * 1000);
+            const u = new URLSearchParams(location.search).get('url');
+            window.location.href = `https://${CONFIG.site}${encodeURIComponent(atob(u))}`;
+            return true;
+        }
+        return false;
+    }
+
+    static createCopyOverlay(text) {
+        const overlay = document.createElement('div');
+        overlay.id = 'copy-overlay';
+        overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:2147483647;';
+        const panel = document.createElement('div');
+        panel.style.cssText = 'background:#1a1a1a;color:#e0e0e0;padding:20px;border-radius:10px;text-align:center;max-width:80%;font-family:sans-serif;';
+        panel.innerHTML = `<p style="margin:0 0 10px;">Copy this:</p><p style="margin:0 0 15px;word-break:break-all;background:#333;padding:10px;border-radius:5px;">${text}</p><button id="copy-btn" style="padding:10px 20px;background:#2ea44f;color:white;border:none;border-radius:5px;cursor:pointer;font-weight:bold;">Copy</button><button id="close-btn" style="padding:10px 20px;background:#2d3a57;color:#e0e0e0;border:none;border-radius:5px;cursor:pointer;font-weight:bold;margin-left:10px;">Close</button>`;
+        overlay.appendChild(panel);
+        document.body.appendChild(overlay);
+
+        const copyBtn = document.getElementById('copy-btn');
+        const closeBtn = document.getElementById('close-btn');
+
+        copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(text).then(() => {
+                copyBtn.textContent = 'Copied!';
+                copyBtn.style.background = '#4a4a4a';
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy';
+                    copyBtn.style.background = '#2ea44f';
+                }, 2000);
+            });
+        });
+
+        closeBtn.addEventListener('click', () => overlay.remove());
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') overlay.remove(); }, { once: true });
+    }
+
+    static async handleDefaultBypass(originalHref) {
+        const bypassUrl = `https://trw.lat/?url=${btoa(originalHref)}`;
+        window.location.assign(bypassUrl);
+    }
+
+    static async findHref() {
+        const start = Date.now();
+        while (Date.now() - start < 6000000000000) {
+            await this.sleep(CONFIG.interval + Math.random() * 100);
+            try {
+                if (unsafeWindow.o1success) {
+                    return unsafeWindow.o1result;
+                }
+            } catch (err) { }
+        }
+        return false;
+    }
+
+    static sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    static isBot() {
+        const t = document.title;
+        return t.includes('Just a moment') || t.includes('Just a second');
+    }
+
+    static async main() {
+        const ref = typeof GM_getValue !== 'undefined' ? GM_getValue(CONFIG.REFParamtr) : null;
+
+        if (ref && location.href.includes("/cdn-cgi/")) {
+            if (typeof GM_deleteValue !== 'undefined') {
+                GM_deleteValue(CONFIG.REFParamtr);
+            }
+            await this.handleReferrerRedirect(ref);
+            return;
+        }
+
+        if (this.isBot()) {
+            return;
+        }
+
+        const originalHref = location.href;
+
+        if (await this.handleTrwRedirectFull()) return;
+        if (await this.handleRipBypassFull()) return;
+        
+        if (!confirm('F.E.A.R - Do you want to bypass this link?')) {
+            return;
+        }
+        this.handleDefaultBypass(originalHref);
     }
 }
 
