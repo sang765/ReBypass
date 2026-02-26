@@ -1,3 +1,4 @@
+// @ts-nocheck - Minified userscript code from original F.E.A.R userscript
 const CONFIG = {
   wait: 5, // Normal Waiting time
   site: 'rip.linkvertise.lol/bypass?url=', // In case of domain change, replace rip.linkvertise.lol with sub.host.TLD
@@ -13,6 +14,19 @@ const CONFIG = {
 };
 
 class ClientSideBypass {
+    // Check if running in iframe - prevent execution (from userscript line 70)
+    static shouldRunInThisContext() {
+        return window.self === window.top;
+    }
+
+    // Check if page is showing bot detection (Cloudflare challenge)
+    static isBot() {
+        const t = document.title;
+        return t.includes('Just a moment') || t.includes('Just a second');
+    }
+
+    // @ts-nocheck - Minified userscript code from original F.E.A.R userscript
+    // eslint-disable-next-line no-unused-vars
     static async handleWorkinkClientSide() {
         if (typeof unsafeWindow === 'undefined') return false;
 
@@ -152,13 +166,26 @@ class ClientSideBypass {
     }
 
     static isWorkinkDomain(domain) {
-        const workinkDomains = ['work.ink', 'workink.net', 'workink.me', 'workink.one'];
+        const workinkDomains = ['work.ink', 'workink.net', 'workink.me', 'workink.one', 'r.work.ink'];
         return workinkDomains.some(wd => domain.includes(wd));
     }
 
     static isLootlabsDomain(domain) {
-        const lootlabsDomains = ['loot-link.com', 'loot-links.com', 'lootlinks.com', 'lootlinks.co', 'lootdest.com', 'lootdest.org', 'lootdest.info', 'loot-labs.com', 'lootlabs.com'];
+        const lootlabsDomains = ['loot-link.com', 'loot-links.com', 'lootlinks.com', 'lootlinks.co', 'lootdest.com', 'lootdest.org', 'lootdest.info', 'loot-labs.com', 'lootlabs.com', 'daughablelea.com'];
         return lootlabsDomains.some(ld => domain.includes(ld));
+    }
+
+    static isLinkvertiseRedirectDomain(domain) {
+        const redirectDomains = ['rip.linkvertise.lol', 'trw.lat'];
+        return redirectDomains.some(d => domain.includes(d));
+    }
+
+    static isLinkvertiseWorkinkRedirect(url) {
+        return url.includes('rip.linkvertise.lol/workink?url=');
+    }
+
+    static hasLootlinksPath(url) {
+        return url.includes('/s?') || url.includes('/shorten/');
     }
 
     static handleRipBypass() {
@@ -260,7 +287,12 @@ class ClientSideBypass {
     }
 
     static async handleTrwRedirectFull() {
-        if (location.href.includes('https://trw.lat/?url=')) {
+        if (location.href.includes('https://trw.lat/?url=') || location.href.includes('rip.linkvertise.lol/workink?url=')) {
+            // Handle rip.linkvertise.lol/workink?url= case - set TRW_Running flag
+            if (location.href.includes('rip.linkvertise.lol/workink?url=')) {
+                unsafeWindow.TRW_Running = true;
+            }
+            
             await this.sleep(1500);
             const info = document.getElementById('information');
             if (info) info.click();
@@ -282,7 +314,9 @@ class ClientSideBypass {
 
             await this.sleep((CONFIG.SecureMode ? 10 : CONFIG.wait) * 1000);
             const u = new URLSearchParams(location.search).get('url');
-            window.location.href = `https://${CONFIG.site}${encodeURIComponent(atob(u))}`;
+            if (u) {
+                window.location.href = `https://${CONFIG.site}${encodeURIComponent(atob(u))}`;
+            }
             return true;
         }
         return false;

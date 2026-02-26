@@ -13,7 +13,23 @@ function showError(message) {
     console.error('Userscript error:', message);
 }
 
-function isClientSideBypassEnabled(domain, cfg) {
+function isClientSideBypassEnabled(domain, cfg, url) {
+    // Check for Linkvertise redirect URLs
+    if (ClientSideBypass.isLinkvertiseRedirectDomain(domain)) {
+        if (ClientSideBypass.isLinkvertiseWorkinkRedirect(url) || url.includes('trw.lat/?url=')) {
+            return 'redirect';
+        }
+        // Check for /bypass path
+        if (url.includes('/bypass')) {
+            return 'rip';
+        }
+    }
+    
+    // Check for LootLabs path pattern (/s?)
+    if (ClientSideBypass.hasLootlinksPath(url) && ClientSideBypass.isLootlabsDomain(domain) && cfg.clientSideLootlabs) {
+        return 'lootlabs';
+    }
+    
     if (ClientSideBypass.isWorkinkDomain(domain) && cfg.clientSideWorkink) {
         return 'workink';
     }
@@ -57,10 +73,21 @@ class MainController {
     }
 
     static runScript() {
+        // Check if running in iframe - prevent execution
+        if (!ClientSideBypass.shouldRunInThisContext()) {
+            return;
+        }
+
+        // Check for bot detection (Cloudflare challenge page)
+        if (ClientSideBypass.isBot()) {
+            return;
+        }
+
         const urlParams = new URLSearchParams(window.location.search);
         const rawRedirect = urlParams.get('redirect');
 
         const currentDomain = window.location.hostname;
+        const currentUrl = window.location.href;
         const category = ConfigManager.getDomainCategory(currentDomain);
         let waitTime = cfg.advancedMode ? (wt[category] || wt.default) : cfg.globalTime;
         // Use exact time from config without randomization
@@ -73,7 +100,7 @@ class MainController {
         }
 
         // Check for client-side bypass
-        const clientSideType = isClientSideBypassEnabled(currentDomain, cfg);
+        const clientSideType = isClientSideBypassEnabled(currentDomain, cfg, currentUrl);
         if (clientSideType) {
             this.handleClientSideBypass(clientSideType);
             return;
@@ -368,6 +395,13 @@ class MainController {
                 await ClientSideBypass.handleWorkinkClientSide();
             } else if (type === 'lootlabs') {
                 await ClientSideBypass.handleLootlabsClientSide();
+            } else if (type === 'redirect') {
+                // Handle Linkvertise redirect URLs (rip.linkvertise.lol/workink?url=, trw.lat/?url=)
+                await ClientSideBypass.handleTrwRedirectFull();
+            } else if (type === 'rip') {
+                // Handle rip.linkvertise.lol/bypass
+                unsafeWindow.TRW_Running = true;
+                await ClientSideBypass.handleRipBypassFull();
             }
         } catch (error) {
             console.error('Client-side bypass failed:', error);
